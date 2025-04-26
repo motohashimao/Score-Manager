@@ -1,0 +1,372 @@
+/* 全体のベース */
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  /*background-color: #f4f6f8;*/
+  background-image: url('image/background.png');
+  background-size: cover;  /* 画面いっぱいに広げる */
+  background-position: center; /* 中央寄せ */
+  background-repeat: no-repeat; /* 繰り返さない */
+  margin: 0;
+  padding: 0;
+  color: #333;
+  height: 100%;
+}
+
+a {
+  text-decoration: none;
+}
+
+.container,
+.wrap {
+  width: 100%;
+  margin: 0;
+  /*padding: 20px;*/
+  box-sizing: border-box;
+  display: flex;
+  min-height: 100vh; /* ← ビューポートの高さぴったりに */
+}
+
+.login_container {
+  margin: 10% 30%;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* ヘッダー */
+.login_header {
+  color: #2c3e50;
+  text-align: center;
+  font-size: 30px;
+  margin: 0px 30px 30px 30px;
+  ;
+}
+
+h1,
+h2,
+h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+
+
+/* サイドバー */
+.sidebar {
+  /*background-color: #2c3e50;*/
+  background-color: #4c689b;
+  color: white;
+  padding: 20px;
+  width: 220px;
+  min-height: 100vh;
+  float: left;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* 子要素を左右中央に寄せる */
+}
+
+.sidebar h1,
+.sidebar h2 {
+  color: white;
+  font-size: 24px;
+  margin-bottom: 60px;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+  font-size: 18px;
+}
+
+.sidebar ul li {
+  margin: 20px;
+  text-align: center;
+}
+
+.sidebar ul li a {
+  color: #ecf0f1;
+  padding: 10px 20px;
+  display: inline-block;
+  border-radius: 8px;
+  transition: background-color 0.3s;
+  text-align: center; /* テキスト自体も中央にする */
+}
+
+.sidebar ul li a:hover {
+  background-color: #34495e;
+}
+
+/* メイン */
+.main-content {
+  margin-left: 0px;
+  padding: 20px;
+  width: 70%;
+}
+
+/* フォーム */
+.form-group {
+  margin: 5px 0;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.search{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  gap: 10px; /* 入力欄同士に少し余白をあける */
+  justify-content: center; /* 中央揃えにする */
+}
+
+.select-class{
+  width: 140px;
+}
+
+/*.label-class{
+  margin: 0 0 0 50px;
+}*/
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+select,
+textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin: 8px 0;
+  width: 300px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.btn {
+  background-color: #4c689b;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  padding: 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  margin: 8px 20px 10px 20px;
+  width: 100px;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.button-area {
+  text-align: right;
+  margin: 20px 0;
+}
+
+
+.btn:hover {
+  background-color: #9ba4c5;
+}
+
+.signup-btn {
+  /*background-color: #f3ce90;*/
+  background-color: #7e6159;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  padding: 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  margin: 8px 20px 10px 20px;
+  width: 100px;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.signup-btn:hover {
+  background-color: #fcf0dc;
+}
+
+.d-btn {
+  background-color: #e8a8a6;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  padding: 10px 10px;
+  border: 1px solid #ccc;
+  border-radius: 50px;
+  margin: 8px 20px 0 20px;
+  width: 130px;
+  box-sizing: border-box;
+  font-size: 15px;
+}
+
+.d-btn:hover {
+  background-color: #f6e0e9;
+}
+
+.signup-btn {
+  color: white;
+}
+
+.personal-info {
+  display: flex;
+}
+
+/* テーブル */
+table {
+  border-collapse: collapse;
+  width: 90%;
+  margin: 20px auto;
+  background-color: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+
+table th,
+table td {
+  border: 1px solid #c1c3c2;
+  padding: 6px 4px;
+  text-align: center;
+  font-size: 14px;
+}
+
+table thead {
+  background-color: #ecf0f1;
+}
+
+.table-container {
+  flex: 1; /* ← テーブル部分を空きスペースいっぱいに広げる */
+  overflow: auto;
+}
+
+.name-fields {
+  display: flex;
+  gap: 10px; /* 入力欄同士に少し余白をあける */
+  justify-content: center; /* 中央揃えにする */
+}
+
+.name-fields input {
+  width: 140px; /* それぞれの入力ボックスを少し小さめにする */
+}
+
+/*.test-results table th:first-child,
+.test-results table td:first-child {
+  width: 40px;
+}*/
+
+input[type="checkbox"] {
+  width: 50px;
+}
+
+.test-results table input[type="text"] {
+  width: 120px;
+  padding: 4px;
+  font-size: 14px;
+}
+
+.test-results table th,
+.test-results table td {
+  padding: 6px;
+  font-size: 14px;
+}
+
+.form-table {
+  width: 90%;
+  max-width: 800px; /* ←最大幅を制限する（大きい画面用） */
+  margin: 0 auto; /* ←中央に寄せる */
+}
+
+.form-table th,
+.form-table td {
+  padding: 8px 10px;
+}
+
+.form-table {
+  width: 90%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.form-table th,
+.form-table td {
+  padding: 8px 10px;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="date"],
+select,
+textarea {
+  font-size: 16px;
+  padding: 8px;
+}
+
+
+
+/* 写真セクション */
+.photo-section,
+.photo-box {
+  text-align: center;
+  margin: 20px 0;
+}
+
+.photo-placeholder {
+  background-color: #bdc3c7;
+  background-image: url('image/noimage.png');
+  background-size: contain; /* 画像サイズを調整 */
+  background-repeat: no-repeat; /* 繰り返しなし */
+  background-position: center; /* 中央に配置 */
+  padding: 90px 70px;
+  border-radius: 8px;
+  font-size: 16px;
+  margin: 0 20px 20px 20px;
+}
+
+/* メモ */
+.memo-section textarea {
+  width: 1100px;
+  height: 100px;
+  resize: vertical;
+  margin: 0 20px 0 40px;
+}
+
+/* ページネーション */
+.paging {
+  margin: 30px 0;
+  text-align: center;
+  padding: 10px;
+}
+
+.paging a {
+  margin: 0 10px;
+  padding: 8px 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #fff;
+  color: #333;
+}
+
+.paging a:hover {
+  background-color: #4c689b;
+  color: white;
+  border-color: #4c689b;
+}
+
+/* レスポンシブ対応 */
+/*@media (max-width: 768px) {
+  .sidebar {
+    float: none;
+    width: 100%;
+    min-height: auto;
+  }
+  .main-content {
+    margin-left: 0;
+  }
+}*/
