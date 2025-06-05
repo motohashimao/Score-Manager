@@ -1,7 +1,6 @@
-/* 全体のベース */
+/*全体のベース*/
 body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
-  /*background-color: #f4f6f8;*/
   background-image: url('image/background.png');
   background-size: cover;  /* 画面いっぱいに広げる */
   background-position: center; /* 中央寄せ */
@@ -16,223 +15,175 @@ a {
   text-decoration: none;
 }
 
-.container,
 .wrap {
   width: 100%;
   margin: 0;
-  /*padding: 20px;*/
   box-sizing: border-box;
-  display: flex;
-  min-height: 100vh; /* ← ビューポートの高さぴったりに */
-}
-
-.login_container {
-  margin: 10% 30%;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  min-height: 100vh;
 }
 
 /* ヘッダー */
+.header-logo{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1{
+  background-color: #4c689b;
+  color: white;
+  font-size: 24px;
+  text-align: center;
+  padding: 20px;
+  margin: 0;
+  border-radius: 20px;
+}
+
+h2,h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 24px;
+}
+
+/* ログインページのスタイル */
 .login_header {
   color: #2c3e50;
   text-align: center;
   font-size: 30px;
-  margin: 0px 30px 30px 30px;
-  ;
+  margin: 30px;
 }
-
-h1,
-h2,
-h3 {
-  color: #2c3e50;
-  margin-bottom: 20px;
-  text-align: center;
+.login_container {
+  margin: 10%;
+  height: 100vh;
 }
-
-
-
-/* サイドバー */
-.sidebar {
-  /*background-color: #2c3e50;*/
-  background-color: #4c689b;
-  color: white;
-  padding: 20px;
-  width: 220px;
-  min-height: 100vh;
-  float: left;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* 子要素を左右中央に寄せる */
-}
-
-.sidebar h1,
-.sidebar h2 {
-  color: white;
-  font-size: 24px;
-  margin-bottom: 60px;
-}
-
-.sidebar ul {
-  list-style: none;
-  padding: 0;
-  font-size: 18px;
-}
-
-.sidebar ul li {
-  margin: 20px;
-  text-align: center;
-}
-
-.sidebar ul li a {
-  color: #ecf0f1;
-  padding: 10px 20px;
-  display: inline-block;
-  border-radius: 8px;
-  transition: background-color 0.3s;
-  text-align: center; /* テキスト自体も中央にする */
-}
-
-.sidebar ul li a:hover {
-  background-color: #34495e;
-}
-
-/* メイン */
-.main-content {
-  margin-left: 0px;
-  padding: 20px;
-  width: 70%;
-}
-
-/* フォーム */
-.form-group {
-  margin: 5px 0;
-}
-
 .login-form {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* メイン */
+.main-content {
+  padding: 20px;
+  width: 100%;
+}
+
+/* 検索項目 */
 .search{
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 20px 0;
-  gap: 10px; /* 入力欄同士に少し余白をあける */
-  justify-content: center; /* 中央揃えにする */
+  gap: 10px;
 }
 
-.select-class{
-  width: 140px;
-}
-
-/*.label-class{
-  margin: 0 0 0 50px;
-}*/
-
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="date"],
-select,
-textarea {
+/* 入力項目欄 */
+input[type="text"],input[type="email"],
+input[type="password"],input[type="date"],
+select,textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
   margin: 8px 0;
   width: 300px;
   box-sizing: border-box;
-  font-size: 1rem;
+  font-size: 16px;
 }
 
+input[type="checkbox"] {
+  width: 50px;
+}
+
+/* ボタン（全体） */
 .btn {
   background-color: #4c689b;
   color: white;
-  border: none;
+  /* border: none; */
   cursor: pointer;
-  transition: background-color 0.3s;
-  padding: 10px 10px;
+  /* transition: background-color 0.3s; */
+  padding: 10px;
   border: 1px solid #ccc;
   border-radius: 50px;
-  margin: 8px 20px 10px 20px;
+  /* margin: 8px 20px 10px 20px; */
+  margin: 20px;
   width: 100px;
   box-sizing: border-box;
   font-size: 15px;
 }
-
-.button-area {
-  text-align: right;
-  margin: 20px 0;
-}
-
-
 .btn:hover {
   background-color: #9ba4c5;
 }
 
-.signup-btn {
-  /*background-color: #f3ce90;*/
+.button-area {
+  display: flex;
+  justify-content: right;
+  padding: 20px 50px;
+}
+
+/*各種ボタン*/
+.signup-btn {/*新規登録ボタン*/
   background-color: #7e6159;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  padding: 10px 10px;
-  border: 1px solid #ccc;
-  border-radius: 50px;
-  margin: 8px 20px 10px 20px;
-  width: 100px;
-  box-sizing: border-box;
-  font-size: 15px;
 }
-
 .signup-btn:hover {
-  background-color: #fcf0dc;
+  background-color: #f0e4d0;
 }
-
-.d-btn {
+.index-btn {/*生徒一覧ボタン*/
+  margin: 10px 100px;
+}
+.d-btn {/*テスト成績削除ボタン*/
   background-color: #e8a8a6;
-  color: white;
-  border: none;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  padding: 10px 10px;
-  border: 1px solid #ccc;
-  border-radius: 50px;
-  margin: 8px 20px 0 20px;
   width: 130px;
-  box-sizing: border-box;
   font-size: 15px;
 }
-
 .d-btn:hover {
   background-color: #f6e0e9;
 }
-
-.signup-btn {
-  color: white;
+.delete-btn{/*全削除ボタン*/
+  color: #ecf0f1;
+  background-color: rgb(234, 29, 36);
+}
+.delete-btn:hover {
+  background-color: #ecaca2;
+}
+.logout-btn{/*ログアウトボタン*/
+  background-color: rgb(74, 72, 72);
+  color: #efecec;
 }
 
+/*生徒データ編集ページ*/
 .personal-info {
   display: flex;
+}
+/* 写真セクション */
+.photo-section,.photo-box {
+  text-align: center;
+  margin: 20px;
+}
+
+ .photo-placeholder img{
+  background-color: #bdc3c7;
+  width: 150px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin: 0 100px 30px 100px;
 }
 
 /* テーブル */
 table {
   border-collapse: collapse;
   width: 90%;
-  margin: 20px auto;
+  margin: 0 auto;
   background-color: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
-table th,
-table td {
+table th,table td {
   border: 1px solid #c1c3c2;
-  padding: 6px 4px;
+  padding: 10px 12px;  /* 縦横のパディングを調整 */
   text-align: center;
   font-size: 14px;
 }
@@ -253,16 +204,8 @@ table thead {
 }
 
 .name-fields input {
-  width: 140px; /* それぞれの入力ボックスを少し小さめにする */
-}
-
-/*.test-results table th:first-child,
-.test-results table td:first-child {
-  width: 40px;
-}*/
-
-input[type="checkbox"] {
-  width: 50px;
+  /* それぞれの入力ボックスを少し小さめにする */
+  width: 140px;
 }
 
 .test-results table input[type="text"] {
@@ -288,60 +231,29 @@ input[type="checkbox"] {
   padding: 8px 10px;
 }
 
-.form-table {
-  width: 90%;
-  max-width: 800px;
-  margin: 0 auto;
-}
-
-.form-table th,
-.form-table td {
-  padding: 8px 10px;
-}
-
-input[type="text"],
-input[type="email"],
-input[type="date"],
-select,
-textarea {
-  font-size: 16px;
-  padding: 8px;
-}
-
-
-
-/* 写真セクション */
-.photo-section,
-.photo-box {
-  text-align: center;
-  margin: 20px 0;
-}
-
-.photo-placeholder {
-  background-color: #bdc3c7;
-  background-image: url('image/noimage.png');
-  background-size: contain; /* 画像サイズを調整 */
-  background-repeat: no-repeat; /* 繰り返しなし */
-  background-position: center; /* 中央に配置 */
-  padding: 90px 70px;
-  border-radius: 8px;
-  font-size: 16px;
-  margin: 0 20px 20px 20px;
-}
-
 /* メモ */
-.memo-section textarea {
-  width: 1100px;
+.memo {
+  width: 100%;
   height: 100px;
   resize: vertical;
-  margin: 0 20px 0 40px;
+  font-size: 16px;
+  margin: 20px auto;
 }
 
-/* ページネーション */
+.data-box {
+  width: 90%;
+  margin: 20px auto;
+  border-radius: 8px;
+}
+
+/* ページング */
 .paging {
   margin: 30px 0;
-  text-align: center;
   padding: 10px;
+  display: flex;
+  list-style: none;
+  justify-content: center;
+  align-items: center;
 }
 
 .paging a {
@@ -349,24 +261,22 @@ textarea {
   padding: 8px 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  background-color: #fff;
+  /* background-color: #fff; */
   color: #333;
 }
-
 .paging a:hover {
   background-color: #4c689b;
   color: white;
   border-color: #4c689b;
 }
 
-/* レスポンシブ対応 */
-/*@media (max-width: 768px) {
-  .sidebar {
-    float: none;
-    width: 100%;
-    min-height: auto;
-  }
-  .main-content {
-    margin-left: 0;
-  }
-}*/
+.clickable-row {
+  cursor: pointer;
+}
+
+.error {
+    color: #e63b38;
+    text-align: center;
+    margin-bottom: 15px;
+    font-weight: bold;
+}

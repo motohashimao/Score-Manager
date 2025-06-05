@@ -20,6 +20,8 @@ services:
     - 80:8000
     volumes:
     - ./work:/work
+    - ./work/public:/var/www/html
+    - ./work/app:/var/www/html/app
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin_sm
