@@ -277,6 +277,7 @@ table thead {
 .error {
     color: #e63b38;
     text-align: center;
+    
     margin-bottom: 15px;
     font-weight: bold;
 }

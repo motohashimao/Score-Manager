@@ -48,8 +48,6 @@ document.addEventListener('DOMContentLoaded', () => {
     deleteBtn.addEventListener('click', function () {
       if (confirm('本当に削除しますか？')) {
         const memo = document.querySelector('.memo-section textarea');
-        if (memo) memo.value = '';
-        alert("削除しました");
       }
     });
   }

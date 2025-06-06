@@ -28,16 +28,17 @@ unset($_SESSION['errors'], $_SESSION['old']);
     <main class="main-content">
       <h2>新規登録</h2>
       <button class="btn index-btn" onclick="location.href='index.php'">生徒一覧</a></button>
-      <form action="/app/user.php" method="post" enctype="multipart/form-data">
-        <div class="personal-info">
-        <!-- 入力フォーム -->
-         <?php if (!empty($errors)): ?>
-  <div class="error-messages" style="color: red;">
+      <?php if (!empty($errors)): ?>
+  <div class="error" style="color: red;">
     <?php foreach ($errors as $error): ?>
-      <p><?= htmlspecialchars($error) ?></p>
+      <p><?= h($error) ?></p>
     <?php endforeach; ?>
   </div>
 <?php endif; ?>
+      <form action="/app/user.php" method="post" enctype="multipart/form-data">
+        <div class="personal-info">
+        <!-- 入力フォーム -->
+         
           <table class="form-table">
           <tr>
             <th>クラス名<span style="color:#eb9d7d;">*(必須)</span></th>
@@ -54,14 +55,15 @@ unset($_SESSION['errors'], $_SESSION['old']);
           </tr>
           <tr>
             <th>クラス番号<span style="color:#eb9d7d;">*(必須)</span></th>
-             <td><input type="text" name="class_no" placeholder="例: 1" required value="<?= h($old['class_no'] ?? '') ?>"></td>
+             <td><input type="text" name="class_no" placeholder="例: 1"  value="<?= h($old['class_no'] ?? '') ?>"></td>
           </tr>
           <tr>
             <th>氏名<span style="color:#eb9d7d;">*(必須)</span></th>
             <td colspan="3">
               <div class="name-fields">
-                 <input type="text" name="last_name" placeholder="姓" required value="<?= h($old['last_name'] ?? '') ?>">
-                <input type="text" name="first_name" placeholder="名" required value="<?= h($old['first_name'] ?? '') ?>">
+                 <input type="text" name="last_name" placeholder="姓"  value="<?= h($old['last_name'] ?? '') ?>">
+                <input type="text" name="first_name" placeholder="名"  value="<?= h($old['first_name'] ?? '') ?>">
+                <!-- required -->
               </div>
             </td>
           </tr>
@@ -69,8 +71,8 @@ unset($_SESSION['errors'], $_SESSION['old']);
             <th>氏名かな<span style="color:#eb9d7d;">*(必須)</span></th>
             <td colspan="3">
               <div class="name-fields">
-                <input type="text" name="last_name_kana" placeholder="せい" required value="<?= h($old['last_name_kana'] ?? '') ?>">
-                <input type="text" name="first_name_kana" placeholder="めい" required value="<?= h($old['first_name_kana'] ?? '') ?>">
+                <input type="text" name="last_name_kana" placeholder="せい"  value="<?= h($old['last_name_kana'] ?? '') ?>">
+                <input type="text" name="first_name_kana" placeholder="めい"  value="<?= h($old['first_name_kana'] ?? '') ?>">
               </div>
             </td>
           </tr>

@@ -249,7 +249,7 @@ function updateTestScores($pdo, $student_id, $scores) {
 
         foreach ($subjects as $key => $subject_id) {
             if (isset($score[$key])) {
-                $val = max(0, min((int)$score[$key], 100));
+                $val = max(0, min((int)$score[$key], 100)); // 0〜100の範囲に丸める
                 $pdo->prepare("UPDATE scores SET score = ? WHERE student_id = ? AND test_id = ? AND subject_id = ?")
                     ->execute([$val, $student_id, $test_id, $subject_id]);
             }
@@ -258,8 +258,29 @@ function updateTestScores($pdo, $student_id, $scores) {
 }
 
 // テストスコア削除
-function deleteSelectedScores($pdo, $student_id, $ids) {
-    $in = str_repeat('?,', count($ids) - 1) . '?';
-    $sql = "DELETE FROM scores WHERE student_id = ? AND test_id IN ($in)";
-    $pdo->prepare($sql)->execute(array_merge([$student_id], $ids));
+function deleteSelectedScores(PDO $pdo, array $ids) {
+    $ids = array_filter(array_map('intval', $ids));  // 空値や不正値除去
+    if (count($ids) === 0) {
+        echo "削除対象がありません。";
+        return;
+    }
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $sql = "DELETE FROM scores WHERE id IN ($placeholders)";
+    
+    echo "<pre>削除関数が呼ばれました\n";
+    echo "SQL: $sql\n";
+    echo "params: ";
+    var_dump($ids);
+    echo "</pre>";
+
+    $stmt = $pdo->prepare($sql);
+    $result = $stmt->execute($ids);
+
+    if ($result) {
+        echo "削除成功しました！ 削除件数: " . $stmt->rowCount();
+    } else {
+        $errorInfo = $stmt->errorInfo();
+        echo "削除失敗！エラー: " . implode(', ', $errorInfo) . "\n";
+    }
 }

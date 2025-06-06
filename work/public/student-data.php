@@ -32,7 +32,8 @@ if (!$student) {
 
 // 成績情報の取得
 $sql = "SELECT
-          scores.id AS test_id,
+          scores.id AS score_id,          -- スコアID（主キー）
+          scores.test_id,                 -- テストID（外部キー）
           tests.test_date,
           scores.score,
           subjects.name AS subject_name,
@@ -69,7 +70,8 @@ foreach ($results as $row) {
     $testKey = $row['test_cd'] . '_' . $row['test_date'];
     if (!isset($grouped[$testKey])) {
         $grouped[$testKey] = [
-            'test_id' => $row['test_id'], // ←追加
+            'test_id' => $row['test_id'],
+            'score_id' => $row['score_id'],
             'test_date' => $row['test_date'],
             'test_cd' => $row['test_cd'],
             'japanese' => null,
@@ -89,14 +91,6 @@ foreach ($results as $row) {
 $scores = array_values($grouped);
 
 
-// エラーがあれば表示
-if (!empty($errors)) {
-    echo '<div class="error-messages">';
-    foreach ($errors as $message) {
-        echo '<p style="color: red;">' . h($message) . '</p>';
-    }
-    echo '</div>';
-}
 
 // 表示後にエラー情報をクリア
 unset($_SESSION['errors'], $_SESSION['old']);
@@ -125,6 +119,13 @@ unset($_SESSION['errors'], $_SESSION['old']);
     <main class="main-content">
       <h2>生徒データ編集</h2>
       <button class="btn index-btn" onclick="location.href='index.php'">生徒一覧</a></button>
+        <?php if (!empty($errors)): ?>
+          <div class="error" style="color: red;">
+            <?php foreach ($errors as $error): ?>
+              <p><?= htmlspecialchars($error) ?></p>
+            <?php endforeach; ?>
+          </div>
+        <?php endif; ?>
       <!-- 個人情報 -->
       <!-- 写真セクション -->
       <form method="post" action="/app/update.php" enctype="multipart/form-data" >
@@ -170,7 +171,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
           <tr>
             <th>性別<span style="color:#eb9d7d;">*(必須)</span></th>
             <td>
-              <select name="gender" required>
+              <select name="gender">
                 <option value=""></option>
                 <option value="1" <?= ($student['gender'] == 1) ? 'selected' : '' ?>>男性</option>
                 <option value="2" <?= ($student['gender'] == 2) ? 'selected' : '' ?>>女性</option>
@@ -263,7 +264,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
                 $average = $count > 0 ? round($total / $count, 1) : 0;
               ?>
               <tr>
-                <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['test_id']) ?>"></td>
+                <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['id']) ?>"></td>
                 <td><?= h($score['test_date']) ?></td>
                 <td><?= $testTypes[$score['test_cd']] ?? '不明なテスト' ?></td>
                 <td><input type="text" name="scores[<?= $index ?>][japanese]" value="<?= h($score['japanese']) ?>"></td>
@@ -271,9 +272,13 @@ unset($_SESSION['errors'], $_SESSION['old']);
                 <td><input type="text" name="scores[<?= $index ?>][english]" value="<?= h($score['english']) ?>"></td>
                 <td><input type="text" name="scores[<?= $index ?>][science]" value="<?= h($score['science']) ?>"></td>
                 <td><input type="text" name="scores[<?= $index ?>][society]" value="<?= h($score['society']) ?>"></td>
-                <td><?= $total ?></td>
-                <td><?= $average ?></td>
-                <input type="hidden" name="scores[<?= $index ?>][test_id]" value="<?= $score['test_id'] ?>">
+                <td class="total"><?= $total ?></td>
+                <td class="average"><?= $average ?></td>
+
+               <input type="hidden" name="scores[<?= $index ?>][test_id]" value="<?= h($score['test_id']) ?>">
+              <input type="hidden" name="scores[<?= $index ?>][score_id]" value="<?= h($score['score_id']) ?>">
+                <!-- debug -->
+<td>test_id: <?= $score['test_id'] ?></td>
               </tr>
               <?php endforeach; ?>
             </tbody>
