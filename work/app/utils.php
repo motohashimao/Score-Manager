@@ -21,10 +21,6 @@ function checkLogin() {
     }
 }
 
-
-// データ取得関連
-
-
 // 生徒一覧取得（検索 + ページネーション対応）
 function getStudents($pdo, $class = '', $name = '', $limit = 30, $offset = 0) {
     $sql = "SELECT * FROM students WHERE 1=1";
@@ -210,7 +206,8 @@ function deleteStudent($pdo, $student_id) {
 function handlePhotoUpload($student_id, $file, $pdo) {
     if ($file['error'] !== UPLOAD_ERR_OK) return null;
 
-    $uploadDir = __DIR__ . '/../uploads/';
+    // $uploadDir = __DIR__ . '/../public/uploads/';
+    $uploadDir = realpath(__DIR__ . '/../public/uploads') . '/';
     if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
 
     $tmpName = $file['tmp_name'];
@@ -257,30 +254,23 @@ function updateTestScores($pdo, $student_id, $scores) {
     }
 }
 
-// テストスコア削除
-function deleteSelectedScores(PDO $pdo, array $ids) {
-    $ids = array_filter(array_map('intval', $ids));  // 空値や不正値除去
-    if (count($ids) === 0) {
-        echo "削除対象がありません。";
-        return;
-    }
-
-    $placeholders = implode(',', array_fill(0, count($ids), '?'));
-    $sql = "DELETE FROM scores WHERE id IN ($placeholders)";
+//テストスコア削除(0を表示)
+function deleteSelectedScores(PDO $pdo, array $test_ids) {
+    // 数値に変換しつつ空要素を除外
+    $test_ids = array_filter(array_map('intval', $test_ids));
     
-    echo "<pre>削除関数が呼ばれました\n";
-    echo "SQL: $sql\n";
-    echo "params: ";
-    var_dump($ids);
-    echo "</pre>";
-
-    $stmt = $pdo->prepare($sql);
-    $result = $stmt->execute($ids);
-
-    if ($result) {
-        echo "削除成功しました！ 削除件数: " . $stmt->rowCount();
-    } else {
-        $errorInfo = $stmt->errorInfo();
-        echo "削除失敗！エラー: " . implode(', ', $errorInfo) . "\n";
+    if (count($test_ids) === 0) {
+        return false;
     }
+
+    $placeholders = implode(',', array_fill(0, count($test_ids), '?'));
+
+    // SQL文の準備
+    $sql = "DELETE FROM scores WHERE test_id IN ($placeholders)";
+    $stmt = $pdo->prepare($sql);
+
+    // 実行
+    $result = $stmt->execute($test_ids);
+
+    return $result;
 }

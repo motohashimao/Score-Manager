@@ -128,7 +128,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
         <?php endif; ?>
       <!-- 個人情報 -->
       <!-- 写真セクション -->
-      <form method="post" action="/app/update.php" enctype="multipart/form-data" >
+      <form action="/app/update.php" method="post" enctype="multipart/form-data" >
         <div class="personal-info">
         <input type="hidden" name="id" value="<?= h($student['id']) ?>">
         <!-- 入力フォーム -->
@@ -264,7 +264,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
                 $average = $count > 0 ? round($total / $count, 1) : 0;
               ?>
               <tr>
-                <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['id']) ?>"></td>
+                 <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['test_id']) ?>"></td>
                 <td><?= h($score['test_date']) ?></td>
                 <td><?= $testTypes[$score['test_cd']] ?? '不明なテスト' ?></td>
                 <td><input type="text" name="scores[<?= $index ?>][japanese]" value="<?= h($score['japanese']) ?>"></td>
@@ -277,8 +277,6 @@ unset($_SESSION['errors'], $_SESSION['old']);
 
                <input type="hidden" name="scores[<?= $index ?>][test_id]" value="<?= h($score['test_id']) ?>">
               <input type="hidden" name="scores[<?= $index ?>][score_id]" value="<?= h($score['score_id']) ?>">
-                <!-- debug -->
-<td>test_id: <?= $score['test_id'] ?></td>
               </tr>
               <?php endforeach; ?>
             </tbody>

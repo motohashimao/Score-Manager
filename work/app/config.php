@@ -1,6 +1,8 @@
 <?php
 
-session_start();//セッション開始
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 
 // define('DSN', 'mysql:host=db;dbname=myapp;charset=utf8mb4');//データベース接続
 define('DSN', 'mysql:host=db;dbname=scoremanager;charset=utf8mb4');

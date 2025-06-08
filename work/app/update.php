@@ -1,5 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
+
 require_once(__DIR__ . '/../app/database.php');
 require_once(__DIR__ . '/../app/utils.php');
 
@@ -11,10 +16,6 @@ if (!$student_id) {
     echo "不正なアクセスです。";
     exit;
 }
-
-// if (!empty($_POST['scores'])) {
-//   var_dump($_POST['scores']);
-// }
 
 // バリデーション
 $errors = validateStudentData($_POST);
@@ -39,20 +40,39 @@ if (isset($_POST['deleteStudent'])) {
 
 // 選択した成績削除処理
 if (isset($_POST['deleteScores'])) {
-    $selected_scores = $_POST['selected_scores'] ?? [];
-    if (!empty($selected_scores)) {
-        deleteSelectedScores($pdo, $selected_scores);
-        $_SESSION['message'] = "選択した成績を削除しました。";
+    // チェックされたtest_idを受け取る
+    $selected = $_POST['selected_scores'] ?? [];
+
+    if (!empty($selected)) {
+        // 0にリセット更新する処理
+        $placeholders = implode(',', array_fill(0, count($selected), '?'));
+        $sql = "UPDATE scores SET score = 0 WHERE test_id IN ($placeholders)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute($selected);
+
+        echo "選択したテストの成績を0にリセットしました。";
     } else {
-        $_SESSION['message'] = "削除する成績が選択されていません。";
+        echo "削除対象が選択されていません。";
     }
     redirect("/student-data.php?id=$student_id");
     exit;
 }
 
+// if (isset($_POST['deleteScores'])) {
+//     $selected_scores = $_POST['selected_scores'] ?? [];
+//     if (!empty($selected_scores)) {
+//         deleteSelectedScores($pdo, $selected_scores);
+//         $_SESSION['message'] = "選択した成績を削除しました。";
+//     } else {
+//         $_SESSION['message'] = "削除する成績が選択されていません。";
+//     }
+//     redirect("/student-data.php?id=$student_id");
+//     exit;
+// }
+
 // 更新処理（生徒情報と成績）
 if (isset($_POST['updateStudent'])) {
-    
+
     // 生年月日チェック（空欄はnull）
     $birth_date_raw = $_POST['birth_date'] ?? '';
     $birth_date = ($birth_date_raw === '') ? null : $birth_date_raw;
@@ -94,13 +114,16 @@ if (isset($_POST['updateStudent'])) {
 }
 
      // 写真アップロード処理
+    //  echo "アップロード処理開始";
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
+        //  echo "ファイルが送信された";
         $result = handlePhotoUpload($student_id, $_FILES['photo'], $pdo);
         if ($result === false) {
+            //  echo "ファイルにエラーあり";
             $_SESSION['errors'][] = "対応していないファイル形式です。";
             redirect("/student-data.php?id=$student_id");
             exit;
-        }
+         }
     }
 
     // 更新完了後、編集画面に戻る
@@ -108,7 +131,3 @@ if (isset($_POST['updateStudent'])) {
     redirect("/student-data.php?id=$student_id");
     exit;
 }
-
-// 該当処理なし → 編集画面に戻す
-redirect("/student-data.php?id=$student_id");
-exit;
