@@ -114,12 +114,25 @@ if (isset($_POST['updateStudent'])) {
 }
 
      // 写真アップロード処理
-    //  echo "アップロード処理開始";
+     echo "アップロード処理開始";
+    //  エラーコードの説明
+        $upload_errors = [
+            UPLOAD_ERR_OK => 'エラーなし',
+            UPLOAD_ERR_INI_SIZE => 'アップロードファイルがphp.iniのupload_max_filesizeを超過',
+            UPLOAD_ERR_FORM_SIZE => 'アップロードファイルがHTMLフォームのMAX_FILE_SIZEを超過',
+            UPLOAD_ERR_PARTIAL => 'ファイルが部分的にしかアップロードされなかった',
+            UPLOAD_ERR_NO_FILE => 'ファイルがアップロードされなかった',
+            UPLOAD_ERR_NO_TMP_DIR => 'テンポラリフォルダが見つからない',
+            UPLOAD_ERR_CANT_WRITE => 'ディスクへの書き込みに失敗',
+            UPLOAD_ERR_EXTENSION => 'PHP拡張によってアップロードが停止'
+        ];
+        $error_code = $_FILES['photo']['error'] ?? -1;
+        echo 'アップロードエラーup: ' . ($upload_errors[$error_code] ?? '不明なエラー');
     if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-        //  echo "ファイルが送信された";
         $result = handlePhotoUpload($student_id, $_FILES['photo'], $pdo);
+         echo "ファイルが送信されたup";
         if ($result === false) {
-            //  echo "ファイルにエラーあり";
+             echo "ファイルにエラーありup";
             $_SESSION['errors'][] = "対応していないファイル形式です。";
             redirect("/student-data.php?id=$student_id");
             exit;

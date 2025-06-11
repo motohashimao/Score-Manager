@@ -223,8 +223,8 @@ unset($_SESSION['errors'], $_SESSION['old']);
                   $photo = '/' . h($student['image']);
               }
               ?>
-              <img id="preview" src="<?= $photo ?>" alt="student photo">
-
+              <!-- <img id="preview" src="<?= $photo ?>" alt="student photo"> -->
+<img id="preview" src="/uploader/test.txt" alt="student photo">
           </div>
           <?php var_dump($student['image']); ?>
 

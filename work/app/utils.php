@@ -203,38 +203,69 @@ function deleteStudent($pdo, $student_id) {
 }
 
 // 画像アップロード処理
-function handlePhotoUpload($student_id, $file, $pdo) {
+function handlePhotoUpload(int $student_id, array $file, PDO $pdo): ?string {
+    // エラーチェック
     if ($file['error'] !== UPLOAD_ERR_OK) return null;
 
-    // $uploadDir = __DIR__ . '/../public/uploads/';
-    $uploadDir = realpath(__DIR__ . '/../public/uploads') . '/';
-    if (!is_dir($uploadDir)) mkdir($uploadDir, 0777, true);
+    // アップロード先ディレクトリの絶対パス取得・作成
+    $uploadDir = realpath(__DIR__ . '/../public/uploads') ?: (__DIR__ . '/../public/uploads');
+    if (!is_dir($uploadDir)) {
+        mkdir($uploadDir, 0777, true);
+    }
+    $uploadDir = rtrim($uploadDir, '/') . '/';
+    var_dump($uploadDir);
 
+    // ファイル情報取得
     $tmpName = $file['tmp_name'];
     $originalName = basename($file['name']);
     $ext = strtolower(pathinfo($originalName, PATHINFO_EXTENSION));
 
+    // 拡張子・MIMEタイプチェック
     $allowedExtensions = ['jpg', 'jpeg', 'png', 'gif'];
     $allowedMimes = ['image/jpeg', 'image/png', 'image/gif'];
-    $mime = finfo_file(finfo_open(FILEINFO_MIME_TYPE), $tmpName);
 
-    if (!in_array($ext, $allowedExtensions) || !in_array($mime, $allowedMimes)) return false;
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $mime = finfo_file($finfo, $tmpName);
+    finfo_close($finfo);
 
-    foreach (glob($uploadDir . "student_{$student_id}.*") as $old) {
-        if (is_file($old)) unlink($old);
+    if (!in_array($ext, $allowedExtensions, true) || !in_array($mime, $allowedMimes, true)) {
+        return false;
     }
 
+    // 既存ファイルの削除
+    foreach (glob($uploadDir . "student_{$student_id}.*") as $oldFile) {
+        if (is_file($oldFile)) unlink($oldFile);
+    }
+
+    // 新ファイル名・パス
     $newFileName = "student_{$student_id}." . $ext;
     $destination = $uploadDir . $newFileName;
 
+    // ファイル移動
+    var_dump($tmpName); // 一時ファイルのパス
+    var_dump($ext);     // 拡張子
+    var_dump($mime);    // MIMEタイプ
+
+
     if (move_uploaded_file($tmpName, $destination)) {
+        // DBに画像パスを保存
+        echo "move_uploaded_file 成功<br>";
+        if (file_exists($destination)) {
+            echo "ファイルは確かに存在しています";
+        } else {
+            echo "ファイルは move_uploaded_file 直後に存在していません！";
+        }
         $photoPath = 'uploads/' . $newFileName;
         $stmt = $pdo->prepare("UPDATE students SET image = :image WHERE id = :id");
         $stmt->execute([':image' => $photoPath, ':id' => $student_id]);
         return $photoPath;
+    } else {
+        echo "move_uploaded_file 失敗<br>";
+        error_log("Failed to move uploaded file from $tmpName to $destination");
+        return false;
     }
+    var_dump($destination);
 
-    return false;
 }
 
 // 成績更新
@@ -246,7 +277,7 @@ function updateTestScores($pdo, $student_id, $scores) {
 
         foreach ($subjects as $key => $subject_id) {
             if (isset($score[$key])) {
-                $val = max(0, min((int)$score[$key], 100)); // 0〜100の範囲に丸める
+                $val = max(0, min((int)$score[$key], 100)); // 0〜100の範囲
                 $pdo->prepare("UPDATE scores SET score = ? WHERE student_id = ? AND test_id = ? AND subject_id = ?")
                     ->execute([$val, $student_id, $test_id, $subject_id]);
             }

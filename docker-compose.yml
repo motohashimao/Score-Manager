@@ -22,6 +22,7 @@ services:
     - ./work:/work
     - ./work/public:/var/www/html
     - ./work/app:/var/www/html/app
+    # - ./work/public/uploads:/var/www/html/uploads
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest
     container_name: phpmyadmin_sm
