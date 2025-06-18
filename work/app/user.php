@@ -26,7 +26,6 @@ $email = $_POST['email'] ?? '';
 $parent_last_name = $_POST['parent_last_name'] ?? '';
 $parent_first_name = $_POST['parent_first_name'] ?? '';
 $parent_tel_number = $_POST['parent_tel_number'] ?? '';
-// $image = $_POST['image'] ?? '';
 $memo = $_POST['memo'] ?? '';
 
 // 必須項目チェック

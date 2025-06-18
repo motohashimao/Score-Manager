@@ -21,7 +21,7 @@ services:
     volumes:
     - ./work:/work
     - ./work/public:/var/www/html
-    - ./work/app:/var/www/html/app
+    - ./work/app:/var/www/app
     # - ./work/public/uploads:/var/www/html/uploads
   phpmyadmin:
     image: phpmyadmin/phpmyadmin:latest

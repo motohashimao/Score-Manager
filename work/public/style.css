@@ -4,30 +4,38 @@ body {
   background-image: url('image/background.png');
   background-size: cover;  /* 画面いっぱいに広げる */
   background-position: center; /* 中央寄せ */
-  background-repeat: no-repeat; /* 繰り返さない */
+  background-repeat: no-repeat;
   margin: 0;
   padding: 0;
   color: #333;
   height: 100%;
+  width: 100%;
 }
 
 a {
   text-decoration: none;
 }
 
-.wrap {
-  width: 100%;
-  margin: 0;
-  box-sizing: border-box;
-  min-height: 100vh;
+/* ログインページ */
+.login_header {
+  color: #2c3e50;
+  text-align: center;
+  font-size: 30px;
+  margin: 30px;
+}
+.login_container {
+  margin: 10%;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* ヘッダー */
 .header-logo{
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 0 auto;
   padding: 20px;
 }
 
@@ -37,35 +45,15 @@ h1{
   font-size: 24px;
   text-align: center;
   padding: 20px;
-  margin: 0;
   border-radius: 20px;
 }
-
 h2,h3 {
   color: #2c3e50;
-  margin-bottom: 20px;
+  margin: 50px;
   text-align: center;
   font-size: 24px;
 }
 
-/* ログインページのスタイル */
-.login_header {
-  color: #2c3e50;
-  text-align: center;
-  font-size: 30px;
-  margin: 30px;
-}
-.login_container {
-  margin: 10%;
-  height: 100vh;
-}
-.login-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* メイン */
 .main-content {
   padding: 20px;
   width: 100%;
@@ -75,15 +63,12 @@ h2,h3 {
 .search{
   display: flex;
   justify-content: center;
-  align-items: center;
   margin: 20px 0;
-  gap: 10px;
 }
 
-/* 入力項目欄 */
-input[type="text"],input[type="email"],
-input[type="password"],input[type="date"],
-select,textarea {
+/* 入力項目 */
+input[type="text"],input[type="email"],input[type="password"],
+input[type="date"],select,textarea {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -92,7 +77,6 @@ select,textarea {
   box-sizing: border-box;
   font-size: 16px;
 }
-
 input[type="checkbox"] {
   width: 50px;
 }
@@ -101,16 +85,12 @@ input[type="checkbox"] {
 .btn {
   background-color: #4c689b;
   color: white;
-  /* border: none; */
   cursor: pointer;
-  /* transition: background-color 0.3s; */
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 50px;
-  /* margin: 8px 20px 10px 20px; */
   margin: 20px;
   width: 100px;
-  box-sizing: border-box;
   font-size: 15px;
 }
 .btn:hover {
@@ -120,27 +100,30 @@ input[type="checkbox"] {
 .button-area {
   display: flex;
   justify-content: right;
-  padding: 20px 50px;
+  /* padding: 20px 50px; */
 }
 
-/*各種ボタン*/
 .signup-btn {/*新規登録ボタン*/
   background-color: #7e6159;
 }
 .signup-btn:hover {
   background-color: #f0e4d0;
 }
+
 .index-btn {/*生徒一覧ボタン*/
   margin: 10px 100px;
 }
+
 .d-btn {/*テスト成績削除ボタン*/
   background-color: #e8a8a6;
   width: 130px;
   font-size: 15px;
+  margin-right: 10%;
 }
 .d-btn:hover {
   background-color: #f6e0e9;
 }
+
 .delete-btn{/*全削除ボタン*/
   color: #ecf0f1;
   background-color: rgb(234, 29, 36);
@@ -148,28 +131,26 @@ input[type="checkbox"] {
 .delete-btn:hover {
   background-color: #ecaca2;
 }
+
 .logout-btn{/*ログアウトボタン*/
   background-color: rgb(74, 72, 72);
-  color: #efecec;
 }
 
-/*生徒データ編集ページ*/
 .personal-info {
   display: flex;
 }
-/* 写真セクション */
+
+/* 写真 */
 .photo-section,.photo-box {
   text-align: center;
-  margin: 20px;
 }
-
  .photo-placeholder img{
   background-color: #bdc3c7;
   width: 150px;
   height: 200px;
   object-fit: cover;
   border-radius: 10px;
-  margin: 0 100px 30px 100px;
+  margin: 0 100px 30px;
 }
 
 /* テーブル */
@@ -180,18 +161,15 @@ table {
   background-color: white;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
-
 table th,table td {
   border: 1px solid #c1c3c2;
-  padding: 10px 12px;  /* 縦横のパディングを調整 */
+  padding: 10px 12px;
   text-align: center;
   font-size: 14px;
 }
-
 table thead {
   background-color: #ecf0f1;
 }
-
 .table-container {
   flex: 1; /* ← テーブル部分を空きスペースいっぱいに広げる */
   overflow: auto;
@@ -202,44 +180,36 @@ table thead {
   gap: 10px; /* 入力欄同士に少し余白をあける */
   justify-content: center; /* 中央揃えにする */
 }
-
 .name-fields input {
-  /* それぞれの入力ボックスを少し小さめにする */
   width: 140px;
 }
-
 .test-results table input[type="text"] {
   width: 120px;
   padding: 4px;
   font-size: 14px;
 }
-
-.test-results table th,
-.test-results table td {
+.test-results table th,.test-results table td {
   padding: 6px;
   font-size: 14px;
 }
-
 .form-table {
   width: 90%;
   max-width: 800px; /* ←最大幅を制限する（大きい画面用） */
   margin: 0 auto; /* ←中央に寄せる */
 }
-
-.form-table th,
-.form-table td {
+.form-table th,.form-table td {
   padding: 8px 10px;
 }
 
 /* メモ */
 .memo {
-  width: 100%;
+  width: 90%;
   height: 100px;
   resize: vertical;
   font-size: 16px;
   margin: 20px auto;
+  display: block;
 }
-
 .data-box {
   width: 90%;
   margin: 20px auto;
@@ -253,15 +223,12 @@ table thead {
   display: flex;
   list-style: none;
   justify-content: center;
-  align-items: center;
 }
-
 .paging a {
   margin: 0 10px;
   padding: 8px 16px;
   border: 1px solid #ccc;
   border-radius: 6px;
-  /* background-color: #fff; */
   color: #333;
 }
 .paging a:hover {
@@ -269,15 +236,19 @@ table thead {
   color: white;
   border-color: #4c689b;
 }
-
 .clickable-row {
   cursor: pointer;
 }
 
+/*メッセージ*/
+.notice{
+  text-align: center;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
 .error {
     color: #e63b38;
-    text-align: center;
-    
-    margin-bottom: 15px;
-    font-weight: bold;
+}
+.message {
+  color:#11a253;
 }

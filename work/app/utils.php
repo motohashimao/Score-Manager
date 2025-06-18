@@ -1,7 +1,4 @@
-<!-- 処理機能 -->
-
 <?php
-// utils.php - 共通関数まとめ
 
 // HTMLエスケープ
 function h($str) {
@@ -93,7 +90,6 @@ function getStudentCount($pdo, $class = '', $name = '') {
 
 
 // バリデーション関連
-
 // 必須チェック
 function validateRequired($value, $fieldName) {
     return (trim($value) === '') ? "{$fieldName}は必須項目です。" : '';
@@ -204,16 +200,12 @@ function deleteStudent($pdo, $student_id) {
 
 // 画像アップロード処理
 function handlePhotoUpload(int $student_id, array $file, PDO $pdo): ?string {
-    // エラーチェック
     if ($file['error'] !== UPLOAD_ERR_OK) return null;
 
-    // アップロード先ディレクトリの絶対パス取得・作成
-    $uploadDir = realpath(__DIR__ . '/../public/uploads') ?: (__DIR__ . '/../public/uploads');
+      $uploadDir = __DIR__ . '/../public/uploads/';
     if (!is_dir($uploadDir)) {
-        mkdir($uploadDir, 0777, true);
+        mkdir($uploadDir, 0755, true);
     }
-    $uploadDir = rtrim($uploadDir, '/') . '/';
-    var_dump($uploadDir);
 
     // ファイル情報取得
     $tmpName = $file['tmp_name'];
@@ -241,31 +233,15 @@ function handlePhotoUpload(int $student_id, array $file, PDO $pdo): ?string {
     $newFileName = "student_{$student_id}." . $ext;
     $destination = $uploadDir . $newFileName;
 
-    // ファイル移動
-    var_dump($tmpName); // 一時ファイルのパス
-    var_dump($ext);     // 拡張子
-    var_dump($mime);    // MIMEタイプ
-
-
     if (move_uploaded_file($tmpName, $destination)) {
-        // DBに画像パスを保存
-        echo "move_uploaded_file 成功<br>";
-        if (file_exists($destination)) {
-            echo "ファイルは確かに存在しています";
-        } else {
-            echo "ファイルは move_uploaded_file 直後に存在していません！";
-        }
         $photoPath = 'uploads/' . $newFileName;
         $stmt = $pdo->prepare("UPDATE students SET image = :image WHERE id = :id");
         $stmt->execute([':image' => $photoPath, ':id' => $student_id]);
         return $photoPath;
     } else {
-        echo "move_uploaded_file 失敗<br>";
         error_log("Failed to move uploaded file from $tmpName to $destination");
         return false;
     }
-    var_dump($destination);
-
 }
 
 // 成績更新
@@ -286,22 +262,17 @@ function updateTestScores($pdo, $student_id, $scores) {
 }
 
 //テストスコア削除(0を表示)
-function deleteSelectedScores(PDO $pdo, array $test_ids) {
-    // 数値に変換しつつ空要素を除外
+function deleteSelectedScores(PDO $pdo, int $student_id, array $test_ids) {
     $test_ids = array_filter(array_map('intval', $test_ids));
-    
+
     if (count($test_ids) === 0) {
         return false;
     }
 
     $placeholders = implode(',', array_fill(0, count($test_ids), '?'));
 
-    // SQL文の準備
-    $sql = "DELETE FROM scores WHERE test_id IN ($placeholders)";
+    $sql = "UPDATE scores SET score = 0 WHERE student_id = ? AND test_id IN ($placeholders)";
     $stmt = $pdo->prepare($sql);
-
-    // 実行
-    $result = $stmt->execute($test_ids);
-
-    return $result;
+    $params = array_merge([$student_id], $test_ids);
+    return $stmt->execute($params);
 }

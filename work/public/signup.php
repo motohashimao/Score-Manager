@@ -16,29 +16,27 @@ unset($_SESSION['errors'], $_SESSION['old']);
   <title>signup</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <div class="container">
      <!--header-->
-     <header class="header-logo">
-        <h1 class="list">成績管理システム<br>(Score Manager)</h1>
-        <button class="btn logout-btn" onclick="location.href='logout.php'">ログアウト</button>
-      </header>
+    <header class="header-logo">
+      <h1 class="list">成績管理システム<br>(Score Manager)</h1>
+      <button class="btn logout-btn" onclick="location.href='logout.php'">ログアウト</button>
+    </header>
     <!-- メイン -->
     <main class="main-content">
       <h2>新規登録</h2>
       <button class="btn index-btn" onclick="location.href='index.php'">生徒一覧</a></button>
       <?php if (!empty($errors)): ?>
-  <div class="error" style="color: red;">
-    <?php foreach ($errors as $error): ?>
+      <div class="notice error" style="color: red;">
+      <?php foreach ($errors as $error): ?>
       <p><?= h($error) ?></p>
-    <?php endforeach; ?>
+      <?php endforeach; ?>
   </div>
-<?php endif; ?>
-      <form action="/app/user.php" method="post" enctype="multipart/form-data">
+      <?php endif; ?>
+      <form action="user.php" method="post" enctype="multipart/form-data">
         <div class="personal-info">
         <!-- 入力フォーム -->
-         
           <table class="form-table">
           <tr>
             <th>クラス名<span style="color:#eb9d7d;">*(必須)</span></th>
@@ -55,17 +53,16 @@ unset($_SESSION['errors'], $_SESSION['old']);
           </tr>
           <tr>
             <th>クラス番号<span style="color:#eb9d7d;">*(必須)</span></th>
-             <td><input type="text" name="class_no" placeholder="例: 1"  value="<?= h($old['class_no'] ?? '') ?>"></td>
+            <td><input type="text" name="class_no" placeholder="例: 1"  value="<?= h($old['class_no'] ?? '') ?>"></td>
           </tr>
           <tr>
             <th>氏名<span style="color:#eb9d7d;">*(必須)</span></th>
-            <td colspan="3">
-              <div class="name-fields">
-                 <input type="text" name="last_name" placeholder="姓"  value="<?= h($old['last_name'] ?? '') ?>">
-                <input type="text" name="first_name" placeholder="名"  value="<?= h($old['first_name'] ?? '') ?>">
-                <!-- required -->
-              </div>
-            </td>
+              <td colspan="3">
+                <div class="name-fields">
+                  <input type="text" name="last_name" placeholder="姓"  value="<?= h($old['last_name'] ?? '') ?>">
+                  <input type="text" name="first_name" placeholder="名"  value="<?= h($old['first_name'] ?? '') ?>">
+                </div>
+              </td>
           </tr>
           <tr>
             <th>氏名かな<span style="color:#eb9d7d;">*(必須)</span></th>
@@ -122,19 +119,19 @@ unset($_SESSION['errors'], $_SESSION['old']);
               <label for="photo-upload" class="btn image-btn">写真を選択</label>
               <input type="file" id="photo-upload" name="photo" accept="image/*" style="display: none;">
           </div>
-          </div>
+        </div>
       <!-- メモ -->
         <div class="memo-section data-box">
-        <h3>メモ</h3>
-        <textarea name="memo" id="memo" class="memo"><?= h($old['memo'] ?? '') ?></textarea>
-      </div>
+          <h3>メモ</h3>
+          <textarea name="memo" id="memo" class="memo"><?= h($old['memo'] ?? '') ?></textarea>
+        </div>
       <!-- ボタン -->
-      <div class="button-area">
-        <button type="submit" class="btn signup-btn">新規登録</button>
-      </div>
+        <div class="button-area">
+          <button type="submit" class="btn signup-btn">新規登録</button>
+        </div>
       </form>
     </main>
   </div>
-   <script src="main.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

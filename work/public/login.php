@@ -17,13 +17,10 @@ $pass = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $pass  = $_POST['password'];
-
-
 // バリデーション
     $error = validateRequired($email, 'メールアドレス');
     if (!$error) $error = validateRequired($pass, 'パスワード');
     if (!$error) $error = validateEmail($email);
-
     if (!$error) {
         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
         $stmt->execute([$email]);
@@ -69,7 +66,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="btn">ログイン</button>
         </form>
-    </div>
     </div>
 </body>
 </html>

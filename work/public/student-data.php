@@ -8,7 +8,7 @@ $pdo = \MyApp\Database::getInstance();
 $id = $_GET['id'] ?? '';
 
 if (!$id) {
-    echo "アクセス出来てませんわ★";
+    echo "アクセス出来てません";
     exit;
 }
 
@@ -107,7 +107,6 @@ unset($_SESSION['errors'], $_SESSION['old']);
   <title>student list</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
   <div class="wrap">
     <!--header-->
@@ -120,118 +119,119 @@ unset($_SESSION['errors'], $_SESSION['old']);
       <h2>生徒データ編集</h2>
       <button class="btn index-btn" onclick="location.href='index.php'">生徒一覧</a></button>
         <?php if (!empty($errors)): ?>
-          <div class="error" style="color: red;">
+          <div class="notice error">
             <?php foreach ($errors as $error): ?>
-              <p><?= htmlspecialchars($error) ?></p>
+              <p><?= h($error) ?></p>
             <?php endforeach; ?>
           </div>
         <?php endif; ?>
+        <?php if (!empty($_SESSION['message'])): ?>
+          <div class="notice message">
+          <?= h($_SESSION['message']) ?>
+          </div>
+        <?php unset($_SESSION['message']); ?>
+        <?php endif; ?>
       <!-- 個人情報 -->
-      <!-- 写真セクション -->
-      <form action="/app/update.php" method="post" enctype="multipart/form-data" >
-        <div class="personal-info">
-        <input type="hidden" name="id" value="<?= h($student['id']) ?>">
-        <!-- 入力フォーム -->
-        <table class="form-table">
-          <tr>
-            <th>クラス名<span style="color:#eb9d7d;">*(必須)</span></th>
-            <td>
-              <select name="class">
-                <option value=""> </option>
-                <?php foreach (['A','B','C','D','E'] as $class): ?>
-                <option value="<?= $class ?>" <?= ($student['class'] === $class) ? 'selected' : '' ?>><?= $class ?></option>
-                <?php endforeach; ?>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <th>クラス番号<span style="color:#eb9d7d;">*(必須)</span></th>
-            <td>
-              <input type="text" name="class_no" value="<?= h($student['class_no']) ?>" placeholder="例: 1">
-            </td>
-          </tr>
-          <tr>
-            <th>氏名<span style="color:#eb9d7d;">*(必須)</span></th>
-            <td colspan="3">
-              <div class="name-fields">
-                <input type="text" name="last_name" value="<?= h($student['last_name']) ?>" placeholder="姓">
-                <input type="text" name="first_name" value="<?= h($student['first_name']) ?>" placeholder="名">
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th>氏名かな<span style="color:#eb9d7d;">*(必須)</span></th>
-            <td colspan="3">
-              <div class="name-fields">
-                <input type="text" name="last_name_kana" value="<?= h($student['last_name_kana']) ?>" placeholder="せい">
-                <input type="text" name="first_name_kana" value="<?= h($student['first_name_kana']) ?>" placeholder="めい">
-              </div>
-            </td>
-          </tr>
-          <tr>
-            <th>性別<span style="color:#eb9d7d;">*(必須)</span></th>
-            <td>
-              <select name="gender">
-                <option value=""></option>
-                <option value="1" <?= ($student['gender'] == 1) ? 'selected' : '' ?>>男性</option>
-                <option value="2" <?= ($student['gender'] == 2) ? 'selected' : '' ?>>女性</option>
-              </select>
-            </td>
-          </tr>
-          <tr>
-            <th>生年月日</th>
+        <form action="update.php" method="post" enctype="multipart/form-data" >
+          <div class="personal-info">
+            <input type="hidden" name="id" value="<?= h($student['id']) ?>">
+            <!-- 入力フォーム -->
+          <table class="form-table">
+            <tr>
+              <th>クラス名<span style="color:#eb9d7d;">*(必須)</span></th>
               <td>
-                <input type="date" name="birth_date" value="<?= h($student['birth_date']) ?>">
+                <select name="class">
+                  <option value=""> </option>
+                  <?php foreach (['A','B','C','D','E'] as $class): ?>
+                  <option value="<?= $class ?>" <?= ($student['class'] === $class) ? 'selected' : '' ?>><?= $class ?></option>
+                  <?php endforeach; ?>
+                </select>
               </td>
-          </tr>
-          <tr>
-            <th>連絡先</th>
-            <td>
-              <input type="text" name="tel_number" value="<?= h($student['tel_number']) ?>" placeholder="電話番号">
-            </td>
-          </tr>
-          <tr>
-            <th>E-mail</th>
-            <td>
-              <input type="email" name="email" value="<?= h($student['email']) ?>" placeholder="例: test@example.com">
-            </td>
-          </tr>
-          <tr>
-            <th>保護者氏名</th>
+            </tr>
+            <tr>
+              <th>クラス番号<span style="color:#eb9d7d;">*(必須)</span></th>
+              <td>
+                <input type="text" name="class_no" value="<?= h($student['class_no']) ?>" placeholder="例: 1">
+              </td>
+            </tr>
+            <tr>
+              <th>氏名<span style="color:#eb9d7d;">*(必須)</span></th>
               <td colspan="3">
                 <div class="name-fields">
-                  <input type="text" name="parent_last_name" value="<?= h($student['parent_last_name']) ?>" placeholder="姓">
-                  <input type="text" name="parent_first_name" value="<?= h($student['parent_first_name']) ?>" placeholder="名">
+                  <input type="text" name="last_name" value="<?= h($student['last_name']) ?>" placeholder="姓">
+                  <input type="text" name="first_name" value="<?= h($student['first_name']) ?>" placeholder="名">
                 </div>
               </td>
-          </tr>
-          <tr>
-            <th>保護者連絡先</th>
+            </tr>
+            <tr>
+              <th>氏名かな<span style="color:#eb9d7d;">*(必須)</span></th>
+              <td colspan="3">
+                <div class="name-fields">
+                  <input type="text" name="last_name_kana" value="<?= h($student['last_name_kana']) ?>" placeholder="せい">
+                  <input type="text" name="first_name_kana" value="<?= h($student['first_name_kana']) ?>" placeholder="めい">
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>性別<span style="color:#eb9d7d;">*(必須)</span></th>
               <td>
-                <input type="text" name="parent_tel_number" value="<?= h($student['parent_tel_number']) ?>" placeholder="電話番号">
+                <select name="gender">
+                  <option value=""></option>
+                  <option value="1" <?= ($student['gender'] == 1) ? 'selected' : '' ?>>男性</option>
+                  <option value="2" <?= ($student['gender'] == 2) ? 'selected' : '' ?>>女性</option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <th>生年月日</th>
+                <td>
+                  <input type="date" name="birth_date" value="<?= h($student['birth_date']) ?>">
                 </td>
-          </tr>
-        </table>
+            </tr>
+            <tr>
+              <th>連絡先</th>
+              <td>
+                <input type="text" name="tel_number" value="<?= h($student['tel_number']) ?>" placeholder="電話番号">
+              </td>
+            </tr>
+            <tr>
+              <th>E-mail</th>
+              <td>
+                <input type="email" name="email" value="<?= h($student['email']) ?>" placeholder="例: test@example.com">
+              </td>
+            </tr>
+            <tr>
+              <th>保護者氏名</th>
+                <td colspan="3">
+                  <div class="name-fields">
+                    <input type="text" name="parent_last_name" value="<?= h($student['parent_last_name']) ?>" placeholder="姓">
+                    <input type="text" name="parent_first_name" value="<?= h($student['parent_first_name']) ?>" placeholder="名">
+                  </div>
+                </td>
+            </tr>
+            <tr>
+              <th>保護者連絡先</th>
+                <td>
+                  <input type="text" name="parent_tel_number" value="<?= h($student['parent_tel_number']) ?>" placeholder="電話番号">
+                  </td>
+            </tr>
+          </table>
         <!-- 写真セクション -->
-        <div class="photo-section">
-          <div class="photo-placeholder">
-           <?php
-              // 写真のパスを判定
-              if (empty($student['image']) || $student['image'] === 'noimage') {
-                  $photo = '/image/noimage.png';
-              } else {
-                  $photo = '/' . h($student['image']);
-              }
+          <div class="photo-section">
+            <div class="photo-placeholder">
+              <?php
+                if (empty($student['image']) || $student['image'] === 'noimage') {
+                    $photo = '/image/noimage.png';
+                } else {
+                    $photo = '/' . ltrim(h($student['image']), '/');
+                }
               ?>
-              <!-- <img id="preview" src="<?= $photo ?>" alt="student photo"> -->
-<img id="preview" src="/uploader/test.txt" alt="student photo">
-          </div>
-          <?php var_dump($student['image']); ?>
-
+              <img id="preview" src="<?= $photo ?>" alt="student photo">
+            </div>
             <label for="photo-upload" class="btn image-btn">写真を選択</label>
             <input type="file" id="photo-upload" name="photo" accept="image/*" style="display: none;">
-      </div>
-      </div>
+          </div>
+        </div>
       <!-- テスト成績表 -->
         <div class="test-results data-box">
           <h3>テスト成績一覧</h3>
@@ -264,7 +264,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
                 $average = $count > 0 ? round($total / $count, 1) : 0;
               ?>
               <tr>
-                 <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['test_id']) ?>"></td>
+                <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['test_id']) ?>"></td>
                 <td><?= h($score['test_date']) ?></td>
                 <td><?= $testTypes[$score['test_cd']] ?? '不明なテスト' ?></td>
                 <td><input type="text" name="scores[<?= $index ?>][japanese]" value="<?= h($score['japanese']) ?>"></td>
@@ -274,9 +274,8 @@ unset($_SESSION['errors'], $_SESSION['old']);
                 <td><input type="text" name="scores[<?= $index ?>][society]" value="<?= h($score['society']) ?>"></td>
                 <td class="total"><?= $total ?></td>
                 <td class="average"><?= $average ?></td>
-
-               <input type="hidden" name="scores[<?= $index ?>][test_id]" value="<?= h($score['test_id']) ?>">
-              <input type="hidden" name="scores[<?= $index ?>][score_id]" value="<?= h($score['score_id']) ?>">
+                <input type="hidden" name="scores[<?= $index ?>][test_id]" value="<?= h($score['test_id']) ?>">
+                <input type="hidden" name="scores[<?= $index ?>][score_id]" value="<?= h($score['score_id']) ?>">
               </tr>
               <?php endforeach; ?>
             </tbody>
@@ -286,14 +285,14 @@ unset($_SESSION['errors'], $_SESSION['old']);
           <button type="submit" class="btn d-btn" name="deleteScores">テスト成績削除</button>
         </div>
       <!-- メモ -->
-      <div class="memo-section data-box">
-        <h3>メモ</h3>
-        <textarea name="memo" id="memo" class="memo"><?= h($student['memo'] ?? '') ?></textarea>
-          <div class="button-area">
-              <button type="submit" class="btn" name="updateStudent">修正</button>
-              <button type="submit" class="btn delete-btn" name="deleteStudent">全削除</button>
-          </div>
-      </div>
+        <div class="memo-section data-box">
+          <h3>メモ</h3>
+          <textarea name="memo" id="memo" class="memo"><?= h($student['memo'] ?? '') ?></textarea>
+            <div class="button-area">
+                <button type="submit" class="btn" name="updateStudent">修正</button>
+                <button type="submit" class="btn delete-btn" name="deleteStudent">全削除</button>
+            </div>
+        </div>
       </form>
     </main>
   </div>
