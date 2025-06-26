@@ -42,16 +42,34 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+
+// 成績削除ボタンが存在する場合のみ
+document.addEventListener('DOMContentLoaded', function () {
+  const deleteScoresBtn = document.querySelector('button[name="deleteScores"]');
+  if (deleteScoresBtn) {
+    deleteScoresBtn.addEventListener('click', function (e) {
+      const confirmed = confirm('選択したテストの成績を本当に削除しますか？');
+      if (!confirmed) {
+        e.preventDefault(); // キャンセルならフォーム送信ストップ
+      }
+    });
+  }
+});
+
+
+
   // ===== 全削除ボタンの処理 =====
   const deleteBtn = document.querySelector('.delete-btn');
   if (deleteBtn) {
-    deleteBtn.addEventListener('click', function () {
-      if (confirm('本当に削除しますか？')) {
-        const memo = document.querySelector('.memo-section textarea');
+    deleteBtn.addEventListener('click', function (e) {
+      const confirmed = confirm('本当に削除しますか？');
+      if (!confirmed) {
+        e.preventDefault();  // キャンセルされたら送信を止める
       }
     });
   }
 
+  //行クリックで生徒編集ページに遷移
   document.addEventListener('DOMContentLoaded', function () {
     document.querySelectorAll('.clickable-row').forEach(function(row) {
       row.addEventListener('click', function() {

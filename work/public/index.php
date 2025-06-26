@@ -16,15 +16,11 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // 検索条件取得
-$class = isset($_GET['class']) ? $_GET['class'] : '';
-$name = isset($_GET['name']) ? $_GET['name'] : '';
+$class = $_GET['class'] ?? '';
+$name  = $_GET['name']  ?? '';
 
 
 // ページング設定
-$page = isset($_GET['page']) ? max((int)$_GET['page'], 1) : 1;
-$perPage = 30;
-$offset = ($page - 1) * $perPage;
-
 $page = max((int)($_GET['page'] ?? 1), 1);
 $perPage = 30;
 $offset = ($page - 1) * $perPage;
@@ -37,6 +33,9 @@ $totalPages = ceil($totalStudents / $perPage);
 // 生徒一覧取得
 $students = getStudents($pdo, $class, $name, $perPage, $offset);
 
+// クラス一覧取得
+$classes = getClassList();
+$selectedClass = $_GET['class'] ?? ($old['class'] ?? $student['class'] ?? '');
 ?>
 
 
@@ -53,23 +52,31 @@ $students = getStudents($pdo, $class, $name, $perPage, $offset);
     <div class="wrap">
       <!--header-->
         <header class="header-logo">
-        <h1 class="list">成績管理システム<br>(Score Manager)</h1>
+        <h1 class="list">
+          <a href="index.php" style="text-decoration: none; color: inherit;">
+          成績管理システム<br>(Score Manager)
+          </a>
+        </h1>
           <button class="btn logout-btn" onclick="location.href='logout.php'">ログアウト</button>
         </header>
       <!--main-->
         <main class="main-content">
           <h2>生徒一覧</h2>
+          <?php if (!empty($_SESSION['message'])): ?>
+            <div class="notice message">
+              <?= h($_SESSION['message']); ?>
+            </div>
+            <?php unset($_SESSION['message']); ?>
+          <?php endif; ?>
           <!--検索項目-->
           <header class="search">
             <form action="" method="get">
               <label for="class" class="label-class">クラス名</label>
                 <select name="class" id="class" class="select-class">
-                  <option></option>
-                  <option <?= $class == 'A' ? 'selected' : '' ?>>A</option>
-                  <option <?= $class == 'B' ? 'selected' : '' ?>>B</option>
-                  <option <?= $class == 'C' ? 'selected' : '' ?>>C</option>
-                  <option <?= $class == 'D' ? 'selected' : '' ?>>D</option>
-                  <option <?= $class == 'E' ? 'selected' : '' ?>>E</option>
+                  <option value=""></option>
+                  <?php foreach ($classes as $class): ?>
+                 <option value="<?= h($class) ?>" <?= ($class === $selectedClass) ? 'selected' : '' ?>><?= h($class) ?></option>
+                  <?php endforeach; ?>
                 </select>
               <label for="name">氏名[かな]</label>
               <input type="text" name="name" placeholder="例: やまだ" value="<?= h($name) ?>">

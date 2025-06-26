@@ -2,8 +2,8 @@
 body {
   font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
   background-image: url('image/background.png');
-  background-size: cover;  /* 画面いっぱいに広げる */
-  background-position: center; /* 中央寄せ */
+  background-size: cover;
+  background-position: center;
   background-repeat: no-repeat;
   margin: 0;
   padding: 0;
@@ -100,7 +100,6 @@ input[type="checkbox"] {
 .button-area {
   display: flex;
   justify-content: right;
-  /* padding: 20px 50px; */
 }
 
 .signup-btn {/*新規登録ボタン*/
@@ -171,14 +170,14 @@ table thead {
   background-color: #ecf0f1;
 }
 .table-container {
-  flex: 1; /* ← テーブル部分を空きスペースいっぱいに広げる */
+  flex: 1;
   overflow: auto;
 }
 
 .name-fields {
   display: flex;
-  gap: 10px; /* 入力欄同士に少し余白をあける */
-  justify-content: center; /* 中央揃えにする */
+  gap: 10px;
+  justify-content: center;
 }
 .name-fields input {
   width: 140px;
@@ -194,8 +193,8 @@ table thead {
 }
 .form-table {
   width: 90%;
-  max-width: 800px; /* ←最大幅を制限する（大きい画面用） */
-  margin: 0 auto; /* ←中央に寄せる */
+  max-width: 800px;
+  margin: 0 auto;
 }
 .form-table th,.form-table td {
   padding: 8px 10px;
@@ -251,4 +250,10 @@ table thead {
 }
 .message {
   color:#11a253;
+}
+
+.form-note{
+  font-size: 0.85em;
+  color: #8d7c7c;
+  margin: 1px;
 }

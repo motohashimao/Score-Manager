@@ -1,10 +1,9 @@
 <?php
-
+session_start();
 require_once(__DIR__ . '/../app/database.php');
 require_once(__DIR__ . '/../app/utils.php');
 
 $pdo = \MyApp\Database::getInstance();
-
 $id = $_GET['id'] ?? '';
 
 if (!$id) {
@@ -12,42 +11,37 @@ if (!$id) {
     exit;
 }
 
-// バリデーションエラーと前回の入力値を受け取る
-$errors = $_SESSION['errors'] ?? [];
-$old = $_SESSION['old'] ?? [];
-
-// 使い終わったら消す（再読み込みで残らないように）
-unset($_SESSION['errors'], $_SESSION['old']);
-
-
-// 生徒情報の取得
-$stmt = $pdo->prepare("SELECT * FROM students WHERE id = ?");
-$stmt->execute([$id]);
-$student = $stmt->fetch(PDO::FETCH_ASSOC);
-// 生徒が存在しない場合の処理
+$student = fetchStudentById($pdo, (int)$id);
 if (!$student) {
     echo "生徒が見つかりません。";
     exit;
- }
+}
 
-// 成績情報の取得
-$sql = "SELECT
-          scores.id AS score_id,          -- スコアID（主キー）
-          scores.test_id,                 -- テストID（外部キー）
-          tests.test_date,
-          scores.score,
-          subjects.name AS subject_name,
-          tests.test_cd
-        FROM scores
-        JOIN subjects ON scores.subject_id = subjects.id
-        JOIN tests ON scores.test_id = tests.id
-        WHERE scores.student_id = :student_id
-        ORDER BY tests.test_date DESC, subjects.sort ASC";
+// 成績データ取得
+$scores = fetchScoresGroupedByTest($pdo, (int)$id);
 
-$stmt = $pdo->prepare($sql);
-$stmt->execute([':student_id' => $id]);
-$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-$scores = $results;
+// // バリデーションエラーと前回の入力値を受け取る
+$errors = $_SESSION['errors'] ?? [];
+$old = $_SESSION['old'] ?? [];
+
+// 選択済みクラスの値をセット
+$selectedClass = $old['class'] ?? $student['class'] ?? '';
+
+// 性別の選択値をセット
+$selectedGender = $old['gender'] ?? $student['gender'] ?? '';
+
+//科目
+$subjects = getSubjects(); // ヘッダーとデータ両方で使える
+
+// クラス一覧取得
+$classes = getClassList();
+$selectedClass = $_GET['class'] ?? ($old['class'] ?? $student['class'] ?? '');
+
+//画像
+$photoPath = $_SESSION['old']['photo_path'] ?? ($student['image'] ?? 'image/noimage.png');
+
+// // 使い終わったら消す（再読み込みで残らないように）
+unset($_SESSION['errors'], $_SESSION['old']);
 
 // テスト情報の整理
 $testTypes = [
@@ -55,45 +49,6 @@ $testTypes = [
   2 => '期末テスト',
   3 => '総合テスト'
 ];
-
-$subjectMap = [
-    '国語' => 'japanese',
-    '数学' => 'math',
-    '英語' => 'english',
-    '理科' => 'science',
-    '社会' => 'society'
-];
-
-$grouped = [];
-
-foreach ($results as $row) {
-    $testKey = $row['test_cd'] . '_' . $row['test_date'];
-    if (!isset($grouped[$testKey])) {
-        $grouped[$testKey] = [
-            'test_id' => $row['test_id'],
-            'score_id' => $row['score_id'],
-            'test_date' => $row['test_date'],
-            'test_cd' => $row['test_cd'],
-            'japanese' => null,
-            'math' => null,
-            'english' => null,
-            'science' => null,
-            'society' => null
-        ];
-    }
-
-    $key = $subjectMap[$row['subject_name']] ?? null;
-    if ($key) {
-        $grouped[$testKey][$key] = $row['score'];
-    }
-}
-
-$scores = array_values($grouped);
-
-
-
-// 表示後にエラー情報をクリア
-unset($_SESSION['errors'], $_SESSION['old']);
 
 
 ?>
@@ -111,7 +66,11 @@ unset($_SESSION['errors'], $_SESSION['old']);
   <div class="wrap">
     <!--header-->
     <header class="header-logo">
-        <h1 class="list">成績管理システム<br>(Score Manager)</h1>
+        <h1 class="list">
+          <a href="index.php" style="text-decoration: none; color: inherit;">
+          成績管理システム<br>(Score Manager)
+          </a>
+        </h1>
         <button class="btn logout-btn" onclick="location.href='logout.php'">ログアウト</button>
     </header>
     <!--main-->
@@ -141,9 +100,9 @@ unset($_SESSION['errors'], $_SESSION['old']);
               <th>クラス名<span style="color:#eb9d7d;">*(必須)</span></th>
               <td>
                 <select name="class">
-                  <option value=""> </option>
-                  <?php foreach (['A','B','C','D','E'] as $class): ?>
-                  <option value="<?= $class ?>" <?= ($student['class'] === $class) ? 'selected' : '' ?>><?= $class ?></option>
+                  <option value="">選択してください</option>
+                   <?php foreach ($classes as $class): ?>
+                   <option value="<?= $class ?>" <?= ($selectedClass === $class) ? 'selected' : '' ?>><?= $class ?></option>
                   <?php endforeach; ?>
                 </select>
               </td>
@@ -151,15 +110,15 @@ unset($_SESSION['errors'], $_SESSION['old']);
             <tr>
               <th>クラス番号<span style="color:#eb9d7d;">*(必須)</span></th>
               <td>
-                <input type="text" name="class_no" value="<?= h($student['class_no']) ?>" placeholder="例: 1">
+                <input type="text" name="class_no" value="<?= inputValue('class_no',$student['class_no']) ?>" placeholder="例: 1">
               </td>
             </tr>
             <tr>
               <th>氏名<span style="color:#eb9d7d;">*(必須)</span></th>
               <td colspan="3">
                 <div class="name-fields">
-                  <input type="text" name="last_name" value="<?= h($student['last_name']) ?>" placeholder="姓">
-                  <input type="text" name="first_name" value="<?= h($student['first_name']) ?>" placeholder="名">
+                  <input type="text" name="last_name" value="<?= inputValue('last_name', $student['last_name']) ?>" placeholder="姓">
+                  <input type="text" name="first_name" value="<?= inputValue('first_name',$student['first_name']) ?>" placeholder="名">
                 </div>
               </td>
             </tr>
@@ -167,8 +126,8 @@ unset($_SESSION['errors'], $_SESSION['old']);
               <th>氏名かな<span style="color:#eb9d7d;">*(必須)</span></th>
               <td colspan="3">
                 <div class="name-fields">
-                  <input type="text" name="last_name_kana" value="<?= h($student['last_name_kana']) ?>" placeholder="せい">
-                  <input type="text" name="first_name_kana" value="<?= h($student['first_name_kana']) ?>" placeholder="めい">
+                  <input type="text" name="last_name_kana" value="<?= inputValue('last_name_kana',$student['last_name_kana']) ?>" placeholder="せい">
+                  <input type="text" name="first_name_kana" value="<?= inputValue('first_name_kana',$student['first_name_kana']) ?>" placeholder="めい">
                 </div>
               </td>
             </tr>
@@ -176,43 +135,44 @@ unset($_SESSION['errors'], $_SESSION['old']);
               <th>性別<span style="color:#eb9d7d;">*(必須)</span></th>
               <td>
                 <select name="gender">
-                  <option value=""></option>
-                  <option value="1" <?= ($student['gender'] == 1) ? 'selected' : '' ?>>男性</option>
-                  <option value="2" <?= ($student['gender'] == 2) ? 'selected' : '' ?>>女性</option>
+                  <option value="" <?= ($selectedGender === '' || $selectedGender === null) ? 'selected' : '' ?>>選択してください</option>
+                  <option value="1" <?= ($selectedGender == 1) ? 'selected' : '' ?>>男性</option>
+                  <option value="2" <?= ($selectedGender == 2) ? 'selected' : '' ?>>女性</option>
                 </select>
               </td>
             </tr>
             <tr>
               <th>生年月日</th>
                 <td>
-                  <input type="date" name="birth_date" value="<?= h($student['birth_date']) ?>">
+                  <input type="date" name="birth_date" value="<?= inputValue('birth_date',$student['birth_date']) ?>">
                 </td>
             </tr>
             <tr>
               <th>連絡先</th>
               <td>
-                <input type="text" name="tel_number" value="<?= h($student['tel_number']) ?>" placeholder="電話番号">
+                <input type="text" name="tel_number" value="<?= inputValue('tel_number',$student['tel_number']) ?>" placeholder="電話番号">
+                <p class="form-note">※ ハイフン（-）なしの10〜11桁の半角数字で入力してください。</p>
               </td>
             </tr>
             <tr>
               <th>E-mail</th>
               <td>
-                <input type="email" name="email" value="<?= h($student['email']) ?>" placeholder="例: test@example.com">
+                <input type="email" name="email" value="<?= inputValue('email',$student['email']) ?>" placeholder="例: test@example.com">
               </td>
             </tr>
             <tr>
               <th>保護者氏名</th>
                 <td colspan="3">
                   <div class="name-fields">
-                    <input type="text" name="parent_last_name" value="<?= h($student['parent_last_name']) ?>" placeholder="姓">
-                    <input type="text" name="parent_first_name" value="<?= h($student['parent_first_name']) ?>" placeholder="名">
+                    <input type="text" name="parent_last_name" value="<?= inputValue('parent_last_name',$student['parent_last_name']) ?>" placeholder="姓">
+                    <input type="text" name="parent_first_name" value="<?= inputValue('parent_first_name',$student['parent_first_name']) ?>" placeholder="名">
                   </div>
                 </td>
             </tr>
             <tr>
               <th>保護者連絡先</th>
                 <td>
-                  <input type="text" name="parent_tel_number" value="<?= h($student['parent_tel_number']) ?>" placeholder="電話番号">
+                  <input type="text" name="parent_tel_number" value="<?= inputValue('parent_tel_number',$student['parent_tel_number']) ?>" placeholder="電話番号">
                   </td>
             </tr>
           </table>
@@ -234,53 +194,57 @@ unset($_SESSION['errors'], $_SESSION['old']);
         </div>
       <!-- テスト成績表 -->
         <div class="test-results data-box">
-          <h3>テスト成績一覧</h3>
-          <table>
-            <thead>
-              <tr>
-                <th>選択</th>
-                <th>テスト<br>年月日</th>
-                <th>テスト名</th>
-                <th>国語</th>
-                <th>数学</th>
-                <th>英語</th>
-                <th>理科</th>
-                <th>社会</th>
-                <th>合計点</th>
-                <th>平均点</th>
-              </tr>
-            </thead>
-            <tbody>
-              <?php foreach ($scores as $index => $score): ?>
-              <?php
-                $total = 0;
-                $count = 0;
-                foreach (['japanese', 'math', 'english', 'science', 'society'] as $subject) {
-                if (isset($score[$subject])) {
-                  $total += $score[$subject];
-                  $count++;
-                  }
-                }
-                $average = $count > 0 ? round($total / $count, 1) : 0;
-              ?>
-              <tr>
-                <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['test_id']) ?>"></td>
-                <td><?= h($score['test_date']) ?></td>
-                <td><?= $testTypes[$score['test_cd']] ?? '不明なテスト' ?></td>
-                <td><input type="text" name="scores[<?= $index ?>][japanese]" value="<?= h($score['japanese']) ?>"></td>
-                <td><input type="text" name="scores[<?= $index ?>][math]" value="<?= h($score['math']) ?>"></td>
-                <td><input type="text" name="scores[<?= $index ?>][english]" value="<?= h($score['english']) ?>"></td>
-                <td><input type="text" name="scores[<?= $index ?>][science]" value="<?= h($score['science']) ?>"></td>
-                <td><input type="text" name="scores[<?= $index ?>][society]" value="<?= h($score['society']) ?>"></td>
-                <td class="total"><?= $total ?></td>
-                <td class="average"><?= $average ?></td>
-                <input type="hidden" name="scores[<?= $index ?>][test_id]" value="<?= h($score['test_id']) ?>">
-                <input type="hidden" name="scores[<?= $index ?>][score_id]" value="<?= h($score['score_id']) ?>">
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
-        </div>
+         <h3>テスト成績一覧</h3>
+<div class="test-results data-box">
+  <table>
+    <thead>
+      <tr>
+        <th>選択</th>
+        <th>テスト<br>年月日</th>
+        <th>テスト名</th>
+       <?php foreach ($subjects as $key => $label): ?>
+  <th><?= h($label) ?></th>
+<?php endforeach; ?>
+        <th>合計点</th>
+        <th>平均点</th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach ($scores as $index => $score): ?>
+        <?php
+          $total = 0;
+          $count = 0;
+          foreach (array_keys($subjects) as $subject) {
+            $point = $old['scores'][$index][$subject] ?? $score[$subject] ?? '';
+            if ($point !== '') {
+              $total += (int)$point;
+              $count++;
+            }
+          }
+          $average = $count > 0 ? round($total / $count, 1) : 0;
+        ?>
+        <tr>
+          <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['test_id']) ?>"></td>
+          <td><?= h($score['test_date']) ?></td>
+          <td><?= $testTypes[$score['test_cd']] ?? '不明なテスト' ?></td>
+
+          <?php foreach ($subjects as $key => $label): ?>
+  <?php
+     $postScore = $old['scores'][$index][$key] ?? $score[$key] ?? '';
+  ?>
+  <td><input type="text" name="scores[<?= $index ?>][<?= $key ?>]" value="<?= h($postScore) ?>"></td>
+<?php endforeach; ?>
+
+
+          <td class="total"><?= $total ?></td>
+          <td class="average"><?= $average ?></td>
+          <input type="hidden" name="scores[<?= $index ?>][test_id]" value="<?= h($score['test_id']) ?>">
+          <input type="hidden" name="scores[<?= $index ?>][score_id]" value="<?= h($score['score_id']) ?>">
+        </tr>
+      <?php endforeach; ?>
+    </tbody>
+  </table>
+</div>
         <div class="button-area">
           <button type="submit" class="btn d-btn" name="deleteScores">テスト成績削除</button>
         </div>
