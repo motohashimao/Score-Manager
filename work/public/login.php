@@ -14,35 +14,6 @@ $error = '';
 $email = '';
 $pass = '';
 
-// if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-//     $email = trim($_POST['email']);
-//     $pass  = $_POST['password'];
-// バリデーション
-//     $error = validateRequired($email, 'メールアドレス');
-//     if (!$error) $error = validateRequired($pass, 'パスワード');
-//     if (!$error) $error = validateEmail($email);
-//     if (!$error) {
-//         $stmt = $pdo->prepare("SELECT * FROM users WHERE email = ?");
-//         $stmt->execute([$email]);
-//         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-//         if ($user && password_verify($pass, $user['password'])) {
-//             $_SESSION['user_id'] = $user['id'];
-//             $_SESSION['user_name'] = $user['name'];
-//             $_SESSION['is_admin'] = $user['is_admin'] ?? false;
-
-//             header('Location: ./index.php');
-//             exit;
-//         } else {
-//             $error = 'メールアドレスまたはパスワードが間違っています。';
-//         }
-//     }
-// }
-
-// $error = validateRequired($email, 'メールアドレス');
-// if (!$error) $error = validateRequired($pass, 'パスワード');
-// if (!$error) $error = validateLoginEmail($email);
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email = trim($_POST['email']);
     $pass  = $_POST['password'];

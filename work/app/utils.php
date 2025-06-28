@@ -108,11 +108,6 @@ function validateRequired($value, $fieldName) {
     return trim($value) === '' ? 'メールアドレスまたはパスワードが間違っています。' : '';
 }
 
-// ログインメールアドレス
-// function validateLoginEmail($email) {
-//     return !filter_var($email, FILTER_VALIDATE_EMAIL) ? 'メールアドレスまたはパスワードが間違っています。' : '';
-// }
-
 // メールチェック
 function validateEmail($email) {
     return (!filter_var($email, FILTER_VALIDATE_EMAIL)) ? "メールアドレスの形式が正しくありません。" : '';
