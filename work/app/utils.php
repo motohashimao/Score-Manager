@@ -103,6 +103,15 @@ function getStudentCount($pdo, $class = '', $name = '') {
 
 
 // バリデーション関連
+//ログインパスワード
+function validateRequired($value, $fieldName) {
+    return trim($value) === '' ? 'メールアドレスまたはパスワードが間違っています。' : '';
+}
+
+// ログインメールアドレス
+// function validateLoginEmail($email) {
+//     return !filter_var($email, FILTER_VALIDATE_EMAIL) ? 'メールアドレスまたはパスワードが間違っています。' : '';
+// }
 
 // メールチェック
 function validateEmail($email) {
@@ -189,6 +198,22 @@ function validateScores($scores) {
 // 性別をテキスト化
 function genderToText($gender) {
     return $gender == 1 ? '男性' : ($gender == 2 ? '女性' : '不明');
+}
+
+//科目
+function getSubjects(): array {
+    return [
+        'japanese' => '国語',
+        'math' => '数学',
+        'english' => '英語',
+        'science' => '理科',
+        'society' => '社会'
+    ];
+}
+
+//クラス名
+function getClassList(): array {
+    return ['A', 'B', 'C', 'D', 'E'];
 }
 
 // 生徒データ処理
@@ -456,18 +481,3 @@ function selectSelected($name, $value, $student) {
     return ($selectedValue == $value) ? 'selected' : '';
 }
 
-//科目
-function getSubjects(): array {
-    return [
-        'japanese' => '国語',
-        'math' => '数学',
-        'english' => '英語',
-        'science' => '理科',
-        'society' => '社会'
-    ];
-}
-
-//クラス名
-function getClassList(): array {
-    return ['A', 'B', 'C', 'D', 'E'];
-}
