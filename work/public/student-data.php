@@ -30,6 +30,9 @@ $selectedClass = $old['class'] ?? $student['class'] ?? '';
 // 性別の選択値をセット
 $selectedGender = $old['gender'] ?? $student['gender'] ?? '';
 
+//テスト情報の取得
+$testTypes = getTestTypes();
+
 //科目
 $subjects = getSubjects(); // ヘッダーとデータ両方で使える
 
@@ -42,14 +45,6 @@ $photoPath = $_SESSION['old']['photo_path'] ?? ($student['image'] ?? 'image/noim
 
 // // 使い終わったら消す（再読み込みで残らないように）
 unset($_SESSION['errors'], $_SESSION['old']);
-
-// テスト情報の整理
-$testTypes = [
-  1 => '中間テスト',
-  2 => '期末テスト',
-  3 => '総合テスト'
-];
-
 
 ?>
 

@@ -190,9 +190,18 @@ function validateScores($scores) {
 
 
 // 表示変換
-// 性別をテキスト化
+// 性別
 function genderToText($gender) {
     return $gender == 1 ? '男性' : ($gender == 2 ? '女性' : '不明');
+}
+
+// テスト種別
+function getTestTypes(): array {
+    return [
+        1 => '中間テスト',
+        2 => '期末テスト',
+        3 => '総合テスト'
+    ];
 }
 
 //科目
