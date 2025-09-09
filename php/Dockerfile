@@ -1,4 +1,5 @@
-FROM php:7.3-alpine
+# FROM php:7.3-alpine
+FROM php:8.3-alpine
 
 # Set timezone to Asia/Tokyo
 RUN apk add --no-cache tzdata && \

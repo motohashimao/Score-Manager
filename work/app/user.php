@@ -1,20 +1,22 @@
 <?php
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 session_start();
 
 require_once(__DIR__ . '/../app/config.php');
 require_once(__DIR__ . '/../app/database.php');
 require_once(__DIR__ . '/../app/utils.php');
+require_once(__DIR__ . '/../app/Model/Student.php');
 
-use MyApp\Database;
+$pdo = MyApp\Database::getInstance();
+$studentModel = new StudentModel($pdo);
 
-// DB接続
-$pdo = Database::getInstance();
+// POSTデータ取得
+$studentData = $studentModel->collectStudentPostData();
 
-// POSTデータをまとめて取得
-$studentData = collectStudentPostData();
-
-// バリデーション実行
+// バリデーション
 $errors = validateStudentData($studentData);
 if (!empty($errors)) {
     $_SESSION['errors'] = $errors;
@@ -22,39 +24,22 @@ if (!empty($errors)) {
     redirect('/signup.php');
 }
 
-// INSERT文
-$sql = "INSERT INTO students (
-    class, class_no,
-    last_name, first_name,
-    last_name_kana, first_name_kana,
-    gender, birth_date,
-    tel_number, email,
-    parent_last_name, parent_first_name,
-    parent_tel_number, memo, image,
-    student_deleted, created_at, updated_at
-) VALUES (
-    :class, :class_no,
-    :last_name, :first_name,
-    :last_name_kana, :first_name_kana,
-    :gender, :birth_date,
-    :tel_number, :email,
-    :parent_last_name, :parent_first_name,
-    :parent_tel_number, :memo, :image,
-    :student_deleted,
-    NOW(), NOW()
-)";
-
+// INSERT
+$sql = $studentModel->buildInsertSql();
 $stmt = $pdo->prepare($sql);
-$stmt->execute(prepareStudentInsertParams($studentData));
+$stmt->execute($studentModel->prepareStudentInsertParams($studentData));
 
-// 新しい student_id を取得
+// 新しい student_id
 $student_id = $pdo->lastInsertId();
 
-// 画像アップロード処理
+// 画像アップロード
 if (isset($_FILES['photo']) && $_FILES['photo']['error'] === UPLOAD_ERR_OK) {
-    uploadStudentPhoto($student_id, $_FILES['photo'], $pdo, "/student-data.php?id=$student_id");
+    $filename = $studentModel->uploadPhoto($student_id, $_FILES['photo']);
+    if ($filename) {
+        $stmt = $pdo->prepare("UPDATE students SET image = ? WHERE id = ?");
+        $stmt->execute(array($filename, $student_id));
+    }
 }
 
-// 登録後、生徒データ編集にリダイレクト
- $_SESSION['message'] = "新規登録が完了しました。";
-redirect("/student-data.php?id=$student_id");
+$_SESSION['message'] = "新規登録が完了しました。";
+redirect("/student-data.php?id=" . $student_id);

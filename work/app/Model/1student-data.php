@@ -1,25 +1,19 @@
 <?php
-// ini_set('display_errors', '1');
-// ini_set('display_startup_errors', '1');
-// error_reporting(E_ALL);
-
 session_start();
-
 require_once(__DIR__ . '/../app/database.php');
 require_once(__DIR__ . '/../app/utils.php');
-require_once(__DIR__ . '/../app/Model/Student.php');
+require_once(__DIR__ . '/../app/Model/student.php');
 
 $pdo = \MyApp\Database::getInstance();
 $id = $_GET['id'] ?? '';
-$uploadDir = __DIR__ . '/uploads/';
-
-$studentModel = new StudentModel($pdo, $uploadDir);
+$studentModel = new StudentModel($pdo);
 
 if (!$id) {
     echo "アクセス出来てません";
     exit;
 }
 
+// $student = fetchStudentById($pdo, (int)$id);
 $student = $studentModel->fetchStudentById((int)$id);
 
 if (!$student) {
@@ -28,11 +22,16 @@ if (!$student) {
 }
 
 // 成績データ取得
+// $scores = fetchScoresGroupedByTest($pdo, (int)$id);
 $scores = $studentModel->fetchScoresGroupedByTest((int)$id);
 
-// //バリデーションエラーと前回の入力値を受け取る
+
+// // バリデーションエラーと前回の入力値を受け取る
 $errors = $_SESSION['errors'] ?? [];
 $old = $_SESSION['old'] ?? [];
+
+// 選択済みクラスの値をセット
+$selectedClass = $old['class'] ?? $student['class'] ?? '';
 
 // 性別の選択値をセット
 $selectedGender = $old['gender'] ?? $student['gender'] ?? '';
@@ -48,10 +47,11 @@ $classes = getClassList();
 $selectedClass = $_GET['class'] ?? ($old['class'] ?? $student['class'] ?? '');
 
 //画像
-$photoPath = $studentModel->getPhotoPath($student['image'] ?? null);
+$photoPath = $_SESSION['old']['photo_path'] ?? ($student['image'] ?? 'image/noimage.png');
 
 // // 使い終わったら消す（再読み込みで残らないように）
 unset($_SESSION['errors'], $_SESSION['old']);
+
 ?>
 
 
@@ -188,7 +188,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
                     $photo = '/' . ltrim(h($student['image']), '/');
                 }
               ?>
-              <img id="preview" src="<?= h($photoPath) ?>" alt="student photo">
+              <img id="preview" src="<?= $photo ?>" alt="student photo">
             </div>
             <label for="photo-upload" class="btn image-btn">写真を選択</label>
             <input type="file" id="photo-upload" name="photo" accept="image/*" style="display: none;">
@@ -204,48 +204,45 @@ unset($_SESSION['errors'], $_SESSION['old']);
                   <th>選択</th>
                   <th>テスト<br>年月日</th>
                   <th>テスト名</th>
-                    <?php foreach ($subjects as $key => $label): ?>
-                    <th><?= h($label) ?></th>
-                    <?php endforeach; ?>
+                <?php foreach ($subjects as $key => $label): ?>
+            <th><?= h($label) ?></th>
+          <?php endforeach; ?>
                   <th>合計点</th>
                   <th>平均点</th>
                 </tr>
               </thead>
               <tbody>
-              <?php foreach ($scores as $index => $score): ?>
-              <?php
-                $total = 0;
-                $count = 0;
-                foreach (array_keys($subjects) as $subject) {
-                  $point = $old['scores'][$score['test_id']][$subject] ?? $score[$subject] ?? '';
-                  if ($point !== '') {
-                    $total += (int)$point;
-                    $count++;
-                  }
-                }
-                $average = $count > 0 ? round($total / $count, 1) : 0;
-              ?>
-              <tr>
-                <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['test_id']) ?>"></td>
-                <td><?= h($score['test_date']) ?></td>
-                <td><?= $testTypes[$score['test_cd']] ?? '不明なテスト' ?></td>
-                <?php foreach ($subjects as $key => $label): ?>
-                <?php $postScore = $old['scores'][$score['test_id']][$key] ?? $score[$key] ?? ''; ?>
-                <td>
-                  <input  type="text"
-                            name="scores[<?= $score['test_id'] ?>][<?= $key ?>]"
-                            value="<?= h($postScore) ?>">
-                </td>
+                <?php foreach ($scores as $index => $score): ?>
+                  <?php
+                    $total = 0;
+                    $count = 0;
+                    foreach (array_keys($subjects) as $subject) {
+                      $point = $old['scores'][$index][$subject] ?? $score[$subject] ?? '';
+                      if ($point !== '') {
+                        $total += (int)$point;
+                        $count++;
+                      }
+                    }
+                    $average = $count > 0 ? round($total / $count, 1) : 0;
+                  ?>
+                  <tr>
+                    <td><input type="checkbox" name="selected_scores[]" value="<?= h($score['test_id']) ?>"></td>
+                    <td><?= h($score['test_date']) ?></td>
+                    <td><?= $testTypes[$score['test_cd']] ?? '不明なテスト' ?></td>
+                    <?php foreach ($subjects as $key => $label): ?>
+                    <?php
+                      $postScore = $old['scores'][$index][$key] ?? $score[$key] ?? '';
+                    ?>
+                    <td><input type="text" name="scores[<?= $index ?>][<?= $key ?>]" value="<?= h($postScore) ?>"></td>
+                    <?php endforeach; ?>
+                    <td class="total"><?= $total ?></td>
+                    <td class="average"><?= $average ?></td>
+                    <input type="hidden" name="scores[<?= $index ?>][test_id]" value="<?= h($score['test_id']) ?>">
+                    <input type="hidden" name="scores[<?= $index ?>][score_id]" value="<?= h($score['score_id']) ?>">
+                  </tr>
                 <?php endforeach; ?>
-                <td class="total"><?= $total ?></td>
-                <td class="average"><?= $average ?></td>
-                <!-- test_id, score_id を紐づけ -->
-                <input type="hidden" name="scores[<?= $score['test_id'] ?>][test_id]" value="<?= h($score['test_id']) ?>">
-                <input type="hidden" name="scores[<?= $score['test_id'] ?>][score_id]" value="<?= h($score['score_id']) ?>">
-              </tr>
-              <?php endforeach; ?>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
           </div>
         <div class="button-area">
           <button type="submit" class="btn d-btn" name="deleteScores">テスト成績削除</button>

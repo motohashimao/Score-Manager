@@ -1,24 +1,29 @@
 <!-- ブラウザ表示 http://localhost/-->
 <!-- phpmyadmin http://localhost:8080-->
-
+ 
 <?php
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 
 session_start();
 
 require_once(__DIR__ . '/../app/utils.php');
 require_once(__DIR__ . '/../app/database.php');
-
-$pdo = \MyApp\Database::getInstance();
+require_once(__DIR__ . '/../app/Model/Student.php');
 
 // ログインチェック
 if (!isset($_SESSION['user_id'])) {
     redirect('login.php');
 }
 
+//DB接続
+$pdo = \MyApp\Database::getInstance();
+$studentModel = new StudentModel($pdo);
+
 // 検索条件取得
 $class = $_GET['class'] ?? '';
 $name  = $_GET['name']  ?? '';
-
 
 // ページング設定
 $page = max((int)($_GET['page'] ?? 1), 1);
@@ -26,16 +31,16 @@ $perPage = 30;
 $offset = ($page - 1) * $perPage;
 
 // 生徒総数・ページ数
-$totalStudents = getStudentCount($pdo, $class, $name);
+$totalStudents = $studentModel->getStudentCount($class, $name);
 $totalPages = ceil($totalStudents / $perPage);
 
 
 // 生徒一覧取得
-$students = getStudents($pdo, $class, $name, $perPage, $offset);
+$students = $studentModel->getStudents($class, $name, $perPage, $offset);
 
 // クラス一覧取得
 $classes = getClassList();
-$selectedClass = $_GET['class'] ?? ($old['class'] ?? $student['class'] ?? '');
+$selectedClass = $_GET['class'] ?? '';
 ?>
 
 
@@ -110,20 +115,29 @@ $selectedClass = $_GET['class'] ?? ($old['class'] ?? $student['class'] ?? '');
             <?php endforeach; ?>
             </table>
           </div>
-        <!--ページネーション-->
-          <ul class="paging">
-            <?php if ($page > 1): ?>
-              <li><a href="?page=<?= $page - 1 ?>">前へ</a></li>
-            <?php endif; ?>
-            <?php for ($i = 1; $i <= $totalPages; $i++): ?>
-              <li><a href="?page=<?= $i ?>" <?= $i === $page ? 'style="font-weight:bold;"' : '' ?>>
-                  <?= $i ?>
-                </a></li>
-            <?php endfor; ?>
-            <?php if ($page < $totalPages): ?>
-              <li><a href="?page=<?= $page + 1 ?>">次へ</a></li>
-            <?php endif; ?>
-          </ul>
+          <!-- ページネーション -->
+<ul class="paging">
+  <?php if ($page > 1): ?>
+    <li>
+      <a href="?<?= http_build_query(['page'=>$page-1,'class'=>$selectedClass,'name'=>$name]) ?>">前へ</a>
+    </li>
+  <?php endif; ?>
+
+  <?php for ($i = 1; $i <= $totalPages; $i++): ?>
+    <li>
+      <a href="?<?= http_build_query(['page'=>$i,'class'=>$selectedClass,'name'=>$name]) ?>"
+         <?= $i === $page ? 'style="font-weight:bold;"' : '' ?>>
+        <?= $i ?>
+      </a>
+    </li>
+  <?php endfor; ?>
+
+  <?php if ($page < $totalPages): ?>
+    <li>
+      <a href="?<?= http_build_query(['page'=>$page+1,'class'=>$selectedClass,'name'=>$name]) ?>">次へ</a>
+    </li>
+  <?php endif; ?>
+</ul>
         </main>
       </div>
     <script src="main.js"></script>

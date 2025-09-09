@@ -1,7 +1,18 @@
 <?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 session_start();
+
 require_once(__DIR__ . '/../app/database.php');
 require_once(__DIR__ . '/../app/utils.php');
+require_once(__DIR__ . '/../app/Model/Student.php');
+
+$pdo = \MyApp\Database::getInstance();
+$uploadDir = __DIR__ . '/../public/uploads/';
+$studentModel = new StudentModel($pdo, $uploadDir);
+
 
 // バリデーションエラーと前回の入力値を受け取る
 $errors = $_SESSION['errors'] ?? [];
@@ -9,20 +20,15 @@ $old = $_SESSION['old'] ?? [];
 
 // クラス一覧を取得
 $classes = getClassList();
-$selectedClass = $_GET['class'] ?? ($old['class'] ?? $student['class'] ?? '');
 
-// 選択済みクラスの値をセット
-$selectedClass = $old['class'] ?? $student['class'] ?? '';
-// 性別の選択値をセット
-$selectedGender = $old['gender'] ?? $student['gender'] ?? '';
+// 選択済みクラスの値
+$selectedClass = $old['class'] ?? '';
 
-$photoPath = $_SESSION['old']['photo_path'] ?? ($student['image'] ?? 'image/noimage.png');
+// 性別の選択値
+$selectedGender = $old['gender'] ?? '';
 
-// 使い終わったら消す（再読み込みで残らないように）
-unset($_SESSION['errors'], $_SESSION['old']);
-
-
-
+// 画像パス
+$photoPath = $studentModel->getPhotoPath($student['image'] ?? null);
 ?>
 
 
@@ -130,6 +136,7 @@ unset($_SESSION['errors'], $_SESSION['old']);
             <th>保護者連絡先</th>
             <td>
                <input type="text" name="parent_tel_number" placeholder="電話番号" value="<?= inputValue('parent_tel_number') ?>">
+               <p class="form-note">※ ハイフン（-）なしの10〜11桁の半角数字で入力してください。</p>
             </td>
           </tr>
           </table>
@@ -163,5 +170,9 @@ unset($_SESSION['errors'], $_SESSION['old']);
     </main>
   </div>
   <script src="main.js"></script>
+    <?php
+      // 使い終わったら消す
+      unset($_SESSION['errors'], $_SESSION['old']);
+    ?>
 </body>
 </html>
